@@ -18,8 +18,9 @@
 
 .navbar-links {
   display: flex;
-  gap: 32px;
+  gap: 28px;
   font-size: 0.95rem;
+  font-family: sans-serif;
 }
 
 .navbar-links a {
@@ -39,27 +40,29 @@
   padding: 10px 22px;
   font-size: 0.9rem;
   font-weight: 500;
+  font-family: sans-serif;
   text-decoration: none;
-  transition: background-color 0.2s ease;
   border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 .navbar-connect:hover {
   background-color: #333333;
 }
 
-/* Tablet & Mobile Layout */
+/* Mobile responsive menu handling */
 @media (max-width: 768px) {
   .navbar {
-    padding: 18px 20px;
+    padding: 16px 20px;
   }
 
+  /* Hides middle links on mobile to keep header clean */
   .navbar-links {
-    display: none; /* Keeps navbar minimal on mobile */
+    display: none; 
   }
 
   .navbar-logo {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
   .navbar-connect {
