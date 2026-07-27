@@ -1,0 +1,280 @@
+.contact {
+  padding: 80px 5% 120px 5%;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.contact-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ==========================================
+   SECTION HEADER & ACCENT LINE
+   ========================================== */
+
+.contact-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.contact-label-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-number {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #888888;
+}
+
+.contact-divider {
+  color: #cccccc;
+  font-weight: 300;
+  font-size: 1.1rem;
+}
+
+.contact-section-title {
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.contact-accent-line {
+  height: 2px;
+  width: 0%;
+  background-color: #000000;
+  margin-top: 14px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+
+.contact.is-visible .contact-accent-line {
+  width: 120px;
+}
+
+/* ==========================================
+   FORM INTRO TEXT & LAYOUT
+   ========================================== */
+
+.contact-content-wrapper {
+  max-width: 720px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.contact-intro {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.contact-main-heading {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.contact-subtext {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.15rem;
+  color: #555555;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   FORM INPUTS
+   ========================================== */
+
+.contact-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-family: sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  background-color: #ffffff;
+  font-family: sans-serif;
+  font-size: 1rem;
+  color: #1a1a1a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.contact-btn {
+  width: 100%;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 16px;
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  margin-top: 8px;
+}
+
+.contact-btn:hover {
+  background-color: #333333;
+}
+
+/* Status Notifications */
+.status-msg {
+  font-family: sans-serif;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.status-msg.success {
+  color: #2e7d32;
+}
+
+.status-msg.error {
+  color: #d32f2f;
+}
+
+/* ==========================================
+   SOCIAL MEDIA LINKS
+   ========================================== */
+
+.contact-socials {
+  width: 100%;
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.socials-label {
+  font-family: sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.socials-buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  color: #1a1a1a;
+  font-family: sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.social-btn:hover {
+  border-color: #000000;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================================
+   SCROLL ANIMATIONS
+   ========================================== */
+
+.animate-element {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contact.is-visible .animate-element {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay-1 {
+  transition-delay: 0.1s;
+}
+
+.delay-2 {
+  transition-delay: 0.25s;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .contact {
+    padding: 60px 24px;
+  }
+
+  .contact-main-heading {
+    font-size: 2.2rem;
+  }
+
+  .contact-subtext {
+    font-size: 1rem;
+  }
+
+  .socials-buttons {
+    flex-direction: column;
+  }
+}

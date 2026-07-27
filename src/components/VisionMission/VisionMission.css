@@ -1,0 +1,166 @@
+.vision-mission {
+  padding: 60px 5% 100px 5%;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.vm-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ==========================================
+   HEADINGS & ACCENTS (MATCHES ABOUT & VENTURES)
+   ========================================== */
+
+.vm-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.vm-label-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.vm-number {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #888888;
+}
+
+.vm-divider {
+  color: #cccccc;
+  font-weight: 300;
+}
+
+.vm-section-title {
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.vm-main-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -1px;
+}
+
+.vm-accent-line {
+  height: 2px;
+  width: 0%;
+  background-color: #000000;
+  margin-top: 12px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+
+.vision-mission.is-visible .vm-accent-line {
+  width: 120px;
+}
+
+/* ==========================================
+   CARDS GRID & CARDS
+   ========================================== */
+
+.vm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.vm-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 40px;
+  border-radius: 6px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.vm-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
+}
+
+.vm-tag {
+  font-family: sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888888;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.vm-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.vm-description {
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555555;
+}
+
+/* ==========================================
+   SCROLL ANIMATIONS
+   ========================================== */
+
+.animate-element {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vision-mission.is-visible .animate-element {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay-1 {
+  transition-delay: 0.1s;
+}
+
+.delay-2 {
+  transition-delay: 0.25s;
+}
+
+.delay-3 {
+  transition-delay: 0.4s;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .vm-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .vm-card {
+    padding: 28px;
+  }
+
+  .vm-main-title {
+    font-size: 2.5rem;
+  }
+}

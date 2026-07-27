@@ -1,0 +1,38 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 60px;
+  background-color: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 30px;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+.navbar-links a:hover {
+  opacity: 1;
+}
+
+.navbar-connect {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.navbar-connect:hover {
+  background-color: #333333;
+}

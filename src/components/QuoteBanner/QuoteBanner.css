@@ -1,0 +1,75 @@
+.quote-banner {
+  width: 100%;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 130px 0; /* Expanded height */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quote-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  /* Reduced speed: 45s makes it much smoother and slower */
+  /* infinite ensures it never stops running */
+  animation: marquee 45s linear infinite; 
+}
+
+.quote-content {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  padding-right: 80px;
+}
+
+.quote-content span {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 5.5rem; /* Increased text size */
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
+.quote-star {
+  font-size: 2.8rem !important;
+  color: #888888;
+  display: inline-block;
+  margin: 0 20px;
+}
+
+/* Perfect infinite seamless loop: reset at -50% */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1200px) {
+  .quote-content span {
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .quote-banner {
+    padding: 70px 0;
+  }
+
+  .quote-content span {
+    font-size: 2.8rem;
+  }
+
+  .quote-content {
+    gap: 40px;
+    padding-right: 40px;
+  }
+}

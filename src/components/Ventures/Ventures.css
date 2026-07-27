@@ -1,0 +1,194 @@
+.ventures {
+  padding: 60px 5% 100px 5%;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.ventures-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ==========================================
+   HEADINGS & ACCENTS
+   ========================================== */
+
+.ventures-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ventures-label-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.ventures-number {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #888888;
+}
+
+.ventures-divider {
+  color: #cccccc;
+  font-weight: 300;
+}
+
+.ventures-section-title {
+  font-family: sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #000000;
+  text-transform: uppercase;
+}
+
+.ventures-main-title {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -1px;
+}
+
+.ventures-accent-line {
+  height: 2px;
+  width: 0%;
+  background-color: #000000;
+  margin-top: 12px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+
+.ventures.is-visible .ventures-accent-line {
+  width: 120px;
+}
+
+/* ==========================================
+   CARD GRID & CARDS
+   ========================================== */
+
+.ventures-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.venture-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 40px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.venture-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.06);
+}
+
+.venture-category {
+  font-family: sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #888888;
+  margin-bottom: 12px;
+}
+
+.venture-name {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+
+.venture-description {
+  font-family: sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 28px;
+  min-height: 50px;
+}
+
+/* Image styling matching monochrome reference */
+.venture-image-wrapper {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.venture-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) contrast(105%); /* Minimalist black & white look */
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.venture-card:hover .venture-image {
+  transform: scale(1.03);
+  filter: grayscale(80%) contrast(100%);
+}
+
+/* ==========================================
+   SCROLL ANIMATIONS
+   ========================================== */
+
+.animate-element {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ventures.is-visible .animate-element {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay-1 {
+  transition-delay: 0.1s;
+}
+
+.delay-2 {
+  transition-delay: 0.25s;
+}
+
+.delay-3 {
+  transition-delay: 0.4s;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .ventures-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .venture-card {
+    padding: 28px;
+  }
+
+  .venture-description {
+    min-height: auto;
+  }
+
+  .venture-image-wrapper {
+    height: 220px;
+  }
+}
