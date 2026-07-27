@@ -73,3 +73,44 @@
     padding-right: 40px;
   }
 }
+
+
+///////////
+
+
+
+.quote-banner {
+  width: 100%;
+  background-color: #000000;
+  color: #ffffff;
+  padding: clamp(60px, 8vw, 130px) 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.quote-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: marquee 40s linear infinite;
+}
+
+.quote-content {
+  display: flex;
+  align-items: center;
+  gap: clamp(30px, 5vw, 80px);
+  padding-right: clamp(30px, 5vw, 80px);
+}
+
+.quote-content span {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(2.2rem, 5vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}

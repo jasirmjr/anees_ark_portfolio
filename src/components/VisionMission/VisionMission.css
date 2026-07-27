@@ -164,3 +164,42 @@
     font-size: 2.5rem;
   }
 }
+
+//////////////
+
+
+
+.vision-mission {
+  padding: 80px 5%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.vm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.vm-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 36px;
+  border-radius: 6px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 600px) {
+  .vision-mission {
+    padding: 50px 20px;
+  }
+
+  .vm-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .vm-card {
+    padding: 24px;
+  }
+}
