@@ -6,6 +6,7 @@
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+  position: relative;
 }
 
 .navbar-logo {
@@ -21,6 +22,7 @@
   gap: 28px;
   font-size: 0.95rem;
   font-family: sans-serif;
+  align-items: center;
 }
 
 .navbar-links a {
@@ -50,23 +52,109 @@
   background-color: #333333;
 }
 
+/* Hamburger menu button */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
+}
+
+.hamburger span {
+  width: 24px;
+  height: 2px;
+  background-color: #000000;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Desktop-only elements */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
 /* Mobile responsive menu handling */
 @media (max-width: 768px) {
   .navbar {
     padding: 16px 20px;
   }
 
-  /* Hides middle links on mobile to keep header clean */
-  .navbar-links {
-    display: none; 
-  }
-
   .navbar-logo {
     font-size: 1.2rem;
   }
 
-  .navbar-connect {
-    padding: 8px 16px;
-    font-size: 0.85rem;
+  /* Show hamburger on mobile */
+  .hamburger {
+    display: flex;
+  }
+
+  /* Hide desktop connect button */
+  .desktop-only {
+    display: none;
+  }
+
+  /* Show mobile connect button in menu */
+  .mobile-only {
+    display: inline-block;
+  }
+
+  /* Mobile menu styles */
+  .navbar-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .navbar-links a {
+    font-size: 1rem;
+    padding: 8px 0;
+    opacity: 1;
+  }
+
+  .navbar-links .navbar-connect {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    margin-top: 10px;
   }
 }

@@ -279,46 +279,17 @@
   }
 }
 
-
-
-
-
-
-
-
-///////////
-
-
-.contact {
-  padding: 80px 5% 120px 5%;
-}
-
-.contact-content-wrapper {
-  max-width: 720px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.contact-main-heading {
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
-}
-
-.socials-buttons {
-  display: flex;
-  gap: 16px;
-  width: 100%;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .contact {
     padding: 50px 20px 80px 20px;
   }
 
-  .socials-buttons {
-    flex-direction: column;
+  .contact-main-heading {
+    font-size: 1.8rem;
   }
 
   .social-btn {
     width: 100%;
   }
 }
+

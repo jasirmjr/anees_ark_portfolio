@@ -77,10 +77,10 @@
   object-position: center;
 }
 
-/* Mobile & Small Screen Adaptations (< 850px) */
-@media (max-width: 850px) {
+/* Mobile & Small Screen Adaptations */
+@media (max-width: 768px) {
   .hero {
-    flex-direction: column-reverse; /* Shows model image first or text first cleanly */
+    flex-direction: column-reverse;
     text-align: center;
     padding: 30px 20px 50px 20px;
     gap: 30px;
@@ -108,7 +108,7 @@
   .hero-image-container {
     flex: none;
     width: 100%;
-    max-width: 320px; /* Perfectly sized for mobile screens */
+    max-width: 320px;
     margin: 0 auto;
   }
 
