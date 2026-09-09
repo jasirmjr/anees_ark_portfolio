@@ -190,18 +190,42 @@ export default function FounderPortfolio() {
     return () => cancelAnimationFrame(requestRef.current);
   }, [isDragging]);
 
-  // Drag Handlers for 3D Arc
+  // Responsive 3D Arc Radius
+  const [radius, setRadius] = useState(434);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      const w = window.innerWidth;
+      if (w < 480) {
+        setRadius(230);
+      } else if (w < 768) {
+        setRadius(300);
+      } else if (w < 1024) {
+        setRadius(370);
+      } else {
+        setRadius(434);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Drag Handlers for 3D Arc (Responsive touch + mouse)
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    setStartX(e.pageX || e.touches?.[0].pageX);
+    const clientX = e.pageX ?? e.touches?.[0]?.clientX ?? e.touches?.[0]?.pageX;
+    setStartX(clientX);
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    const currentX = e.pageX || e.touches?.[0].pageX;
-    const delta = (currentX - startX) * 0.35;
+    const clientX = e.pageX ?? e.touches?.[0]?.clientX ?? e.touches?.[0]?.pageX;
+    if (clientX === undefined) return;
+    const delta = (clientX - startX) * 0.35;
     setRotation((prev) => prev + delta);
-    setStartX(currentX);
+    setStartX(clientX);
   };
 
   const handleMouseUp = () => setIsDragging(false);
@@ -217,7 +241,6 @@ export default function FounderPortfolio() {
   ];
 
   const totalCards = arcCards.length;
-  const radius = 434;
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#0a0a0a] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-neutral-900 selection:text-white antialiased overflow-x-clip">
@@ -250,33 +273,28 @@ export default function FounderPortfolio() {
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-neutral-200/40 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="relative z-20 text-center max-w-4xl mx-auto space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-neutral-300 bg-white/80 shadow-xs text-[10px] tracking-[0.3em] uppercase text-neutral-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 animate-pulse" />
-            FOUNDER & CREATIVE DIRECTOR
-          </div>
-
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-thin tracking-tight uppercase leading-[0.92] text-neutral-950">
+        <div className="relative z-20 text-center max-w-4xl mx-auto space-y-3 sm:space-y-4 px-2">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight uppercase leading-[0.92] text-neutral-950">
             ANEES<br />
-            <span className="font-light italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-500 bg-clip-text text-transparent">
+            <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-500 bg-clip-text text-transparent">
               ARK 
             </span>
           </h1>
 
-          <p className="text-xs sm:text-sm font-normal tracking-[0.2em] text-neutral-600 max-w-xl mx-auto uppercase leading-relaxed">
+          <p className="text-[11px] sm:text-xs md:text-sm font-normal tracking-[0.15em] sm:tracking-[0.2em] text-neutral-600 max-w-xl mx-auto uppercase leading-relaxed px-2">
             Architecting ideas into meaningful ventures.
           </p>
         </div>
 
         <div 
-          className="relative w-full max-w-5xl h-[260px] sm:h-[300px] md:h-[320px] flex items-center justify-center mt-1 sm:mt-2"
+          className="relative w-full max-w-5xl h-[220px] sm:h-[270px] md:h-[310px] flex items-center justify-center mt-1 sm:mt-2"
           style={{ 
             perspective: '1000px',
             transform: `translateY(${scrollY * 0.08}px)`
           }}
         >
           <div
-            className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+            className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
             style={{
               transformStyle: 'preserve-3d',
               transform: `rotateX(${-4 + scrollY * 0.02}deg)`
@@ -295,7 +313,7 @@ export default function FounderPortfolio() {
               return (
                 <div
                   key={idx}
-                  className="absolute w-32 sm:w-40 md:w-44 h-44 sm:h-56 md:h-64 rounded-xl overflow-hidden border border-neutral-200/90 bg-white shadow-xl transition-all duration-100 ease-out pointer-events-none"
+                  className="absolute w-28 sm:w-36 md:w-44 h-40 sm:h-52 md:h-64 rounded-xl overflow-hidden border border-neutral-200/90 bg-white shadow-xl transition-all duration-100 ease-out pointer-events-none"
                   style={{
                     transform: `translate3d(${x}px, ${yArch}px, ${z}px) rotateY(${angle}deg)`,
                     opacity: isFacingFront ? opacity : 0.05,
@@ -321,8 +339,8 @@ export default function FounderPortfolio() {
                   )}
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[8px] tracking-widest uppercase font-medium text-white">
-                    <span className="truncate max-w-[80%]">{card.title}</span>
+                  <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-between items-center text-[7px] sm:text-[8px] tracking-widest uppercase font-medium text-white">
+                    <span className="truncate max-w-[75%]">{card.title}</span>
                     <span>0{idx + 1}</span>
                   </div>
                 </div>
@@ -335,10 +353,10 @@ export default function FounderPortfolio() {
       {/* ──────────────────────────────────────────────
           SECTION 2: FOUNDER'S THESIS & STATEMENT
       ────────────────────────────────────────────── */}
-      <section id="about" className="py-40 px-8 sm:px-16 border-t border-neutral-200 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24">
+      <section id="about" className="py-20 sm:py-28 md:py-36 lg:py-40 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-white">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 lg:gap-24">
           <div className="md:col-span-4">
-            <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-6">
+            <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-4 sm:mb-6">
               01 / PERSPECTIVE
             </span>
             <p className="text-xs font-normal tracking-[0.25em] uppercase text-neutral-600 leading-relaxed">
@@ -348,15 +366,14 @@ export default function FounderPortfolio() {
             </p>
           </div>
 
-          <div className="md:col-span-8 space-y-12">
-            <p className="text-3xl sm:text-4xl md:text-5xl font-light leading-[1.3] text-neutral-950">
+          <div className="md:col-span-8 space-y-8 sm:space-y-12">
+            <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light leading-[1.3] text-neutral-950">
               Building the Future of Creative Entrepreneurship
             </p>
-            <p className="text-sm sm:text-base font-light text-neutral-600 leading-loose max-w-2xl">
+            <p className="text-xs sm:text-sm md:text-base font-light text-neutral-600 leading-relaxed sm:leading-loose max-w-2xl">
               I’m Anees Ark, an entrepreneur driven by curiosity, creativity, technology, and the desire to build things that create real value. My work sits at the intersection of creative media, technology, design, and entrepreneurship, where I explore how ideas can evolve into meaningful experiences, products, and ventures.
               I don’t see creativity and technology as separate worlds. For me, they are two sides of the same process imagining something, finding a way to build it, and creating an impact through it. This perspective has shaped the way I approach every project, whether I’m working on a digital product, exploring a creative concept, developing a web experience, or experimenting with a new business idea.
               My journey is driven by a constant desire to learn, experiment, and build. I enjoy moving between different disciplines, understanding how they connect, and bringing them together to create something unique. From visual storytelling and creative production to digital products, web technologies, and business strategy, I’m always looking for new ways to expand what I can create.
-
             </p>
           </div>
         </div>
@@ -368,31 +385,31 @@ export default function FounderPortfolio() {
       <section 
         id="ventures" 
         ref={venturesRef}
-        className="relative bg-[#fafafa] border-t border-neutral-200 py-20 sm:py-28 px-6 sm:px-16 select-none overflow-hidden"
+        className="relative bg-[#fafafa] border-t border-neutral-200 py-16 sm:py-24 md:py-28 px-5 sm:px-10 md:px-16 select-none overflow-hidden"
       >
         {/* Top Header */}
-        <div className="max-w-6xl mx-auto w-full flex justify-between items-baseline border-b border-neutral-200 pb-6 mb-12">
+        <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-neutral-200 pb-6 mb-10 sm:mb-12 gap-3">
           <div>
             <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-2">
               02 / ECOSYSTEM
             </span>
-            <h2 className="text-3xl sm:text-5xl font-light tracking-wide uppercase text-neutral-950">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-light tracking-wide uppercase text-neutral-950">
               VENTURES & PORTFOLIO
             </h2>
           </div>
-          <div className="text-right text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+          <div className="text-left sm:text-right text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
             <span>INDEX [{String(activeVentureIndex + 1).padStart(2, '0')} / {String(ventures.length).padStart(2, '0')}]</span>
           </div>
         </div>
 
         {/* Central Viewport with Live Logo Brand Display */}
-        <div className="relative max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-10 my-4">
+        <div className="relative max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10 my-4">
           
           {/* Left: Needle Ticker */}
-          <div className="relative w-full lg:w-3/5 h-[380px] flex items-center overflow-hidden">
+          <div className="relative w-full lg:w-3/5 h-[320px] sm:h-[380px] flex items-center overflow-hidden">
             {/* Stationary Needle (Center Locked) */}
             <div 
-              className={`absolute left-2 sm:left-4 z-30 flex items-center gap-4 pointer-events-none transition-transform ${
+              className={`absolute left-1 sm:left-4 z-30 flex items-center gap-3 sm:gap-4 pointer-events-none transition-transform ${
                 isNeedleTicking ? 'needle-tick-active' : ''
               }`}
               style={{
@@ -400,7 +417,7 @@ export default function FounderPortfolio() {
                 transform: 'translateY(-50%)'
               }}
             >
-              <span className="text-4xl sm:text-5xl font-light text-neutral-950 leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
+              <span className="text-3xl sm:text-5xl font-light text-neutral-950 leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
                 →
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 animate-ping" />
@@ -408,7 +425,7 @@ export default function FounderPortfolio() {
 
             {/* Scrolling List: Item 0 starts centered on needle */}
             <div 
-              className="w-full pl-16 sm:pl-28 transition-transform duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]"
+              className="w-full pl-12 sm:pl-20 md:pl-28 transition-transform duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]"
               style={{
                 transform: `translateY(calc(190px - ${ITEM_HEIGHT / 2}px - ${activeVentureIndex * ITEM_HEIGHT}px))`
               }}
@@ -434,25 +451,24 @@ export default function FounderPortfolio() {
                         : 'opacity-15 blur-[3px] scale-90 text-neutral-400 font-light'
                     }`}
                   >
-                    <div className="flex items-baseline gap-4 sm:gap-8">
+                    <div className="flex items-baseline gap-3 sm:gap-8">
                       <span className="font-mono text-xs sm:text-sm tracking-widest text-neutral-400">
                         {venture.id}
                       </span>
-                      <h3 className="text-3xl sm:text-5xl md:text-6xl uppercase tracking-tight">
+                      <h3 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl uppercase tracking-tight">
                         {venture.name}
                       </h3>
                     </div>
 
                     <div 
-                      className={`flex items-center gap-4 sm:gap-6 pl-8 sm:pl-14 mt-2 transition-all duration-300 ${
+                      className={`flex items-center gap-3 sm:gap-6 pl-6 sm:pl-12 mt-2 transition-all duration-300 ${
                         isCurrent ? 'opacity-100 max-h-12' : 'opacity-0 max-h-0 overflow-hidden'
                       }`}
                     >
-                     
-                      <span className="text-[10px] font-mono tracking-widest text-neutral-400">
+                      <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-neutral-400">
                         // {venture.period}
                       </span>
-                      <span className="text-[9px] px-2 py-0.5 border border-neutral-300 text-neutral-700 tracking-widest uppercase bg-white shadow-xs">
+                      <span className="text-[8px] sm:text-[9px] px-2 py-0.5 border border-neutral-300 text-neutral-700 tracking-widest uppercase bg-white shadow-xs">
                         {venture.status}
                       </span>
                     </div>
@@ -462,13 +478,13 @@ export default function FounderPortfolio() {
             </div>
 
             {/* Top & Bottom Depth Vignettes */}
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#fafafa] to-transparent pointer-events-none z-20" />
-            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#fafafa] to-transparent pointer-events-none z-20" />
+            <div className="absolute inset-x-0 top-0 h-20 sm:h-24 bg-gradient-to-b from-[#fafafa] to-transparent pointer-events-none z-20" />
+            <div className="absolute inset-x-0 bottom-0 h-20 sm:h-24 bg-gradient-to-t from-[#fafafa] to-transparent pointer-events-none z-20" />
           </div>
 
           {/* Right: Active Venture Brand Showcase Card */}
-          <div className="w-full lg:w-2/5 flex flex-col items-center">
-            <div className="w-full max-w-sm aspect-[4/3] rounded-2xl border border-neutral-200 bg-white p-8 flex items-center justify-center shadow-xs transition-all duration-500 relative group overflow-hidden">
+          <div className="w-full lg:w-2/5 flex flex-col items-center mt-6 lg:mt-0">
+            <div className="w-full max-w-[280px] sm:max-w-sm aspect-[4/3] rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 flex items-center justify-center shadow-xs transition-all duration-500 relative group overflow-hidden">
               <span className="absolute top-3.5 left-4 text-[9px] font-mono tracking-widest text-neutral-400 uppercase">
                 {ventures[activeVentureIndex].id} // BRAND IDENTITY
               </span>
@@ -492,30 +508,33 @@ export default function FounderPortfolio() {
         </div>
 
         {/* Stepper info & dots */}
-        <div className="max-w-6xl mx-auto w-full flex justify-between items-center pt-6 border-t border-neutral-200 text-[9px] font-mono tracking-[0.3em] uppercase text-neutral-400">
-          <span>SCROLL WHEEL OR CLICK TO STEP</span>
+        <div className="max-w-6xl mx-auto w-full flex justify-between items-center pt-6 border-t border-neutral-200 text-[9px] font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase text-neutral-400">
+          <span className="hidden sm:inline">SCROLL WHEEL OR CLICK TO STEP</span>
+          <span className="sm:hidden">CLICK TO STEP</span>
           <div className="flex gap-2 items-center">
             {ventures.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setActiveVentureIndex(i)}
+                aria-label={`Select venture ${i + 1}`}
                 className={`h-1.5 transition-all duration-300 rounded-full ${
                   i === activeVentureIndex ? 'w-8 bg-neutral-900' : 'w-2 bg-neutral-300 hover:bg-neutral-500'
                 }`}
               />
             ))}
           </div>
-          <span>SPRING KINEMATICS // 60 FPS</span>
+          <span className="hidden sm:inline">SPRING KINEMATICS // 60 FPS</span>
+          <span className="sm:hidden">60 FPS</span>
         </div>
 
         {/* Unified Venture Cards Grid */}
-        <div className="max-w-6xl mx-auto w-full mt-20 pt-16 border-t border-neutral-200">
-          <div className="flex justify-between items-end mb-10">
+        <div className="max-w-6xl mx-auto w-full mt-14 sm:mt-20 pt-12 sm:pt-16 border-t border-neutral-200">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-2">
             <div>
               <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-2">
                 VENTURE PORTFOLIO
               </span>
-              <h3 className="text-2xl sm:text-3xl font-light tracking-wide uppercase text-neutral-950">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-light tracking-wide uppercase text-neutral-950">
                 COMPANIES & ENTITIES
               </h3>
             </div>
@@ -524,7 +543,7 @@ export default function FounderPortfolio() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {ventures.map((item, idx) => {
               const isSelected = idx === activeVentureIndex;
               return (
@@ -535,14 +554,14 @@ export default function FounderPortfolio() {
                     setIsNeedleTicking(true);
                     setTimeout(() => setIsNeedleTicking(false), 220);
                   }}
-                  className={`group cursor-pointer rounded-2xl border transition-all duration-300 p-6 flex flex-col justify-between ${
+                  className={`group cursor-pointer rounded-2xl border transition-all duration-300 p-5 sm:p-6 flex flex-col justify-between ${
                     isSelected
                       ? 'bg-white border-neutral-900 shadow-md ring-1 ring-neutral-900'
                       : 'bg-white/70 border-neutral-200 hover:border-neutral-400 hover:bg-white shadow-xs'
                   }`}
                 >
                   <div>
-                    <div className="relative aspect-[3/4] bg-neutral-50 rounded-xl overflow-hidden mb-6 border border-neutral-100 flex items-center justify-center p-6 transition-all">
+                    <div className="relative aspect-[3/4] bg-neutral-50 rounded-xl overflow-hidden mb-5 sm:mb-6 border border-neutral-100 flex items-center justify-center p-5 sm:p-6 transition-all">
                       <img
                         src={item.logo}
                         alt={item.name}
@@ -579,9 +598,9 @@ export default function FounderPortfolio() {
 
 
       {/* ──────────────────────────────────────────────
-          SECTION 6: VISION & MISSION (ENHANCED EDITORIAL DESIGN)
+          SECTION 5: VISION & MISSION (ENHANCED EDITORIAL DESIGN)
       ────────────────────────────────────────────── */}
-      <section id="philosophy" className="relative py-40 px-8 sm:px-16 border-t border-neutral-200 bg-white overflow-hidden">
+      <section id="philosophy" className="relative py-20 sm:py-28 md:py-36 lg:py-40 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-white overflow-hidden">
         {/* Ambient Subtle Glow */}
         <div className="absolute top-1/4 -left-48 w-96 h-96 bg-neutral-100/70 rounded-full blur-3xl pointer-events-none -z-0" />
         <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-[#ff5500]/[0.025] rounded-full blur-3xl pointer-events-none -z-0" />
@@ -589,30 +608,30 @@ export default function FounderPortfolio() {
         <div className="max-w-6xl mx-auto relative z-10">
           
           {/* Top Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between pb-16 border-b border-neutral-200 gap-8 mb-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between pb-10 sm:pb-16 border-b border-neutral-200 gap-6 sm:gap-8 mb-10 sm:mb-16">
             <div>
-              <div className="flex items-center gap-3 text-[10px] font-medium tracking-[0.45em] uppercase text-neutral-400 mb-4">
+              <div className="flex items-center gap-3 text-[10px] font-medium tracking-[0.35em] sm:tracking-[0.45em] uppercase text-neutral-400 mb-3 sm:mb-4">
                 <span className="w-1.5 h-1.5 bg-[#ff5500] rounded-full animate-pulse" />
                 <span>04 / GUIDING PRINCIPLES</span>
               </div>
-              <h2 className="text-4xl sm:text-6xl md:text-7xl font-light tracking-tight uppercase text-neutral-950">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight uppercase text-neutral-950">
                 VISION & <span className="font-light italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">MISSION.</span>
               </h2>
             </div>
 
-            <div className="text-left md:text-right flex flex-col md:items-end text-[10px] font-mono tracking-[0.3em] uppercase text-neutral-400">
+            <div className="text-left md:text-right flex flex-col md:items-end text-[10px] font-mono tracking-[0.25em] sm:tracking-[0.3em] uppercase text-neutral-400">
               <span>ETHOS // CORE PILLARS</span>
               <span className="text-neutral-800 font-medium mt-1">THE FOUNDATIONAL BLUEPRINT</span>
             </div>
           </div>
 
           {/* Cards Grid: Core Vision & Core Mission */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-14">
             
             {/* ────────── CARD 1: CORE VISION ────────── */}
-            <div className="group relative p-10 sm:p-14 rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col justify-between">
+            <div className="group relative p-6 sm:p-10 lg:p-14 rounded-2xl sm:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col justify-between">
               {/* Architectural Watermark */}
-              <div className="absolute -right-4 -bottom-6 text-[11rem] font-thin text-neutral-950/[0.025] pointer-events-none select-none uppercase tracking-tighter leading-none">
+              <div className="absolute -right-4 -bottom-6 text-7xl sm:text-9xl lg:text-[11rem] font-thin text-neutral-950/[0.025] pointer-events-none select-none uppercase tracking-tighter leading-none">
                 VISION
               </div>
 
@@ -624,34 +643,34 @@ export default function FounderPortfolio() {
 
               <div>
                 {/* Header Tag Bar */}
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex justify-between items-center mb-6 sm:mb-10">
                   <div className="flex items-center gap-3">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-950 text-white text-[10px] font-mono">
                       01
                     </span>
-                    <span className="text-xs font-mono tracking-[0.25em] uppercase text-neutral-400">
+                    <span className="text-xs font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-neutral-400">
                       FOUNDATIONAL HORIZON
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest px-3.5 py-1 rounded-full border border-neutral-300 bg-white text-neutral-800 uppercase font-medium shadow-2xs">
+                  <span className="text-[10px] font-mono tracking-widest px-3 sm:px-3.5 py-1 rounded-full border border-neutral-300 bg-white text-neutral-800 uppercase font-medium shadow-2xs">
                     CORE VISION
                   </span>
                 </div>
 
                 {/* Main Statement */}
-                <h3 className="text-2xl sm:text-3xl lg:text-[2rem] font-light leading-[1.3] text-neutral-950 tracking-tight mb-8">
+                <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-6 sm:mb-8">
                   To build a <span className="font-medium underline decoration-[#ff5500]/40 decoration-2 underline-offset-8">creator-first ecosystem</span> where creativity becomes careers, businesses, and lasting opportunities.
                 </h3>
 
                 {/* Sub-Pillars / Breakdown */}
-                <div className="space-y-3.5 pt-8 border-t border-neutral-200/80">
+                <div className="space-y-2.5 sm:space-y-3.5 pt-6 sm:pt-8 border-t border-neutral-200/80">
                   {[
                     { tag: "CAREERS", desc: "Transforming raw creative talent into sustainable, long-term careers." },
                     { tag: "BUSINESSES", desc: "Empowering creators to establish scalable, independent businesses." },
                     { tag: "OPPORTUNITY", desc: "Creating durable networks that unlock continuous, lasting opportunities." }
                   ].map((pillar, i) => (
-                    <div key={i} className="flex items-start gap-4 p-3 rounded-xl hover:bg-neutral-100/60 transition-colors">
-                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 mt-0.5 min-w-[85px]">
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 p-2.5 sm:p-3 rounded-xl hover:bg-neutral-100/60 transition-colors">
+                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 mt-0.5 min-w-[70px] sm:min-w-[85px]">
                         [{pillar.tag}]
                       </span>
                       <p className="text-xs font-light text-neutral-600 leading-relaxed">
@@ -663,16 +682,16 @@ export default function FounderPortfolio() {
               </div>
 
               {/* Bottom Telemetry */}
-              <div className="pt-8 mt-8 border-t border-neutral-200/60 flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+              <div className="pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-neutral-200/60 flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
                 <span>FOCUS // ECOSYSTEM SCALE</span>
                 <span className="group-hover:text-neutral-900 transition-colors">ACTIVE DIRECTIVE →</span>
               </div>
             </div>
 
             {/* ────────── CARD 2: CORE MISSION ────────── */}
-            <div className="group relative p-10 sm:p-14 rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col justify-between">
+            <div className="group relative p-6 sm:p-10 lg:p-14 rounded-2xl sm:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col justify-between">
               {/* Architectural Watermark */}
-              <div className="absolute -right-4 -bottom-6 text-[11rem] font-thin text-neutral-950/[0.025] pointer-events-none select-none uppercase tracking-tighter leading-none">
+              <div className="absolute -right-4 -bottom-6 text-7xl sm:text-9xl lg:text-[11rem] font-thin text-neutral-950/[0.025] pointer-events-none select-none uppercase tracking-tighter leading-none">
                 MISSION
               </div>
 
@@ -684,34 +703,34 @@ export default function FounderPortfolio() {
 
               <div>
                 {/* Header Tag Bar */}
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex justify-between items-center mb-6 sm:mb-10">
                   <div className="flex items-center gap-3">
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-950 text-white text-[10px] font-mono">
                       02
                     </span>
-                    <span className="text-xs font-mono tracking-[0.25em] uppercase text-neutral-400">
+                    <span className="text-xs font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-neutral-400">
                       OPERATIONAL VECTOR
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest px-3.5 py-1 rounded-full border border-neutral-300 bg-white text-neutral-800 uppercase font-medium shadow-2xs">
+                  <span className="text-[10px] font-mono tracking-widest px-3 sm:px-3.5 py-1 rounded-full border border-neutral-300 bg-white text-neutral-800 uppercase font-medium shadow-2xs">
                     CORE MISSION
                   </span>
                 </div>
 
                 {/* Main Statement */}
-                <h3 className="text-2xl sm:text-3xl lg:text-[2rem] font-light leading-[1.3] text-neutral-950 tracking-tight mb-8">
+                <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-6 sm:mb-8">
                   <span className="font-medium underline decoration-[#ff5500]/40 decoration-2 underline-offset-8">Empower creative talent</span> through education, innovation, and entrepreneurship while building ventures that shape the future of the creative economy.
                 </h3>
 
                 {/* Sub-Pillars / Breakdown */}
-                <div className="space-y-3.5 pt-8 border-t border-neutral-200/80">
+                <div className="space-y-2.5 sm:space-y-3.5 pt-6 sm:pt-8 border-t border-neutral-200/80">
                   {[
                     { tag: "EDUCATION", desc: "Imparting cutting-edge craft, design leadership, and digital literacy." },
                     { tag: "INNOVATION", desc: "Pioneering novel tools, creative interfaces, and technical systems." },
                     { tag: "VENTURES", desc: "Incubating dynamic companies that redefine the creative industry." }
                   ].map((pillar, i) => (
-                    <div key={i} className="flex items-start gap-4 p-3 rounded-xl hover:bg-neutral-100/60 transition-colors">
-                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 mt-0.5 min-w-[85px]">
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 p-2.5 sm:p-3 rounded-xl hover:bg-neutral-100/60 transition-colors">
+                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 mt-0.5 min-w-[70px] sm:min-w-[85px]">
                         [{pillar.tag}]
                       </span>
                       <p className="text-xs font-light text-neutral-600 leading-relaxed">
@@ -723,7 +742,7 @@ export default function FounderPortfolio() {
               </div>
 
               {/* Bottom Telemetry */}
-              <div className="pt-8 mt-8 border-t border-neutral-200/60 flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+              <div className="pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-neutral-200/60 flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
                 <span>EXECUTION // VENTURE CATALYST</span>
                 <span className="group-hover:text-neutral-900 transition-colors">ACTIVE VECTOR →</span>
               </div>
@@ -732,14 +751,14 @@ export default function FounderPortfolio() {
           </div>
 
           {/* Bottom Philosophical Quote Bar */}
-          <div className="mt-14 p-8 sm:p-10 rounded-2xl border border-neutral-200 bg-[#fafafa] flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
-              <span className="text-3xl text-[#ff5500] font-serif leading-none">“</span>
+          <div className="mt-10 sm:mt-14 p-6 sm:p-10 rounded-2xl border border-neutral-200 bg-[#fafafa] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <span className="text-2xl sm:text-3xl text-[#ff5500] font-serif leading-none">“</span>
               <p className="text-xs sm:text-sm font-light text-neutral-700 tracking-wide leading-relaxed">
                 Bridging radical creative expression with scalable business infrastructure to make creativity permanent.
               </p>
             </div>
-            <span className="text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase shrink-0">
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.2em] sm:tracking-[0.25em] text-neutral-400 uppercase shrink-0">
               ANEES ARK // THESIS
             </span>
           </div>
@@ -748,18 +767,18 @@ export default function FounderPortfolio() {
       </section>
 
       {/* ──────────────────────────────────────────────
-          SECTION 7: ADVISORY, CONTACT & TRANSMISSION
+          SECTION 6: ADVISORY, CONTACT & TRANSMISSION
       ────────────────────────────────────────────── */}
-      <footer id="contact" className="pt-36 pb-16 px-8 sm:px-16 border-t border-neutral-200 bg-[#fafafa] flex flex-col justify-between min-h-screen">
+      <footer id="contact" className="pt-20 sm:pt-28 md:pt-36 pb-12 sm:pb-16 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-[#fafafa] flex flex-col justify-between min-h-screen">
         <div className="max-w-6xl mx-auto w-full">
-          <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-8">
+          <span className="text-[10px] font-medium tracking-[0.4em] uppercase text-neutral-400 block mb-6 sm:mb-8">
             05 / INQUIRIES & ADVISORY
           </span>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 sm:mb-20">
             {/* Left Column: Vision & Direct Channel */}
-            <div className="lg:col-span-5 space-y-10">
-              <h2 className="text-4xl sm:text-6xl font-light tracking-tight leading-[1.05] uppercase text-neutral-950">
+            <div className="lg:col-span-5 space-y-6 sm:space-y-10">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-light tracking-tight leading-[1.05] uppercase text-neutral-950">
                 LET’S BUILD <br />
                 SOMETHING <br />
                 <span className="font-light italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-500 bg-clip-text text-transparent">
@@ -767,21 +786,11 @@ export default function FounderPortfolio() {
                 </span>
               </h2>
 
-              <p className="text-sm font-light text-neutral-600 leading-relaxed max-w-md">
+              <p className="text-xs sm:text-sm font-light text-neutral-600 leading-relaxed max-w-md">
                 Available for creative production, venture architecture, and strategic advisory. Dispatch a direct transmission or contact via primary channel.
               </p>
 
-              <div className="space-y-4 pt-6 border-t border-neutral-200">
-                <p className="text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase">Direct Channel</p>
-                <a
-                  href="mailto:contact@aneesark.com"
-                  className="inline-block text-xl sm:text-2xl font-light tracking-wider text-neutral-900 hover:text-black border-b border-neutral-300 hover:border-black pb-1 transition-all"
-                >
-                  CONTACT@ANEESARK.COM
-                </a>
-              </div>
-
-              <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500">
+              <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-mono text-neutral-500">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>ACCEPTING SELECT VENTURE INQUIRIES</span>
               </div>
@@ -789,13 +798,13 @@ export default function FounderPortfolio() {
 
             {/* Right Column: Transmission Form */}
             <div className="lg:col-span-7">
-              <div className="p-8 sm:p-10 rounded-2xl border border-neutral-200 bg-white shadow-xs">
-                <div className="flex justify-between items-baseline border-b border-neutral-100 pb-5 mb-8">
+              <div className="p-5 sm:p-8 md:p-10 rounded-2xl border border-neutral-200 bg-white shadow-xs">
+                <div className="flex justify-between items-baseline border-b border-neutral-100 pb-5 mb-6 sm:mb-8">
                   <div>
-                    <h3 className="text-lg font-normal text-neutral-900 tracking-tight">TRANSMIT INQUIRY</h3>
+                    <h3 className="text-base sm:text-lg font-normal text-neutral-900 tracking-tight">TRANSMIT INQUIRY</h3>
                     <p className="text-xs font-light text-neutral-500 mt-0.5">Dispatched directly to primary inbox</p>
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+                  <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
                     DIRECT DISPATCH
                   </span>
                 </div>
@@ -818,7 +827,7 @@ export default function FounderPortfolio() {
                     </button>
                   </div>
                 ) : (
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <form onSubmit={handleFormSubmit} className="space-y-5 sm:space-y-6">
                     {/* Inquiry Scope Chips */}
                     <div>
                       <label className="block text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-2.5">
@@ -830,7 +839,7 @@ export default function FounderPortfolio() {
                             key={type}
                             type="button"
                             onClick={() => setFormData({ ...formData, subject: type })}
-                            className={`text-xs px-3.5 py-1.5 rounded-full border transition-all ${
+                            className={`text-xs px-3 sm:px-3.5 py-1.5 rounded-full border transition-all ${
                               formData.subject === type
                                 ? 'bg-neutral-900 border-neutral-900 text-white font-normal'
                                 : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:border-neutral-400'
@@ -842,7 +851,7 @@ export default function FounderPortfolio() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       {/* Name */}
                       <div>
                         <label className="block text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-2">
@@ -854,7 +863,7 @@ export default function FounderPortfolio() {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Your Name"
-                          className="w-full px-4 py-3 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-4 py-3 text-base sm:text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
 
@@ -869,7 +878,7 @@ export default function FounderPortfolio() {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="name@company.com"
-                          className="w-full px-4 py-3 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-4 py-3 text-base sm:text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
                     </div>
@@ -885,7 +894,7 @@ export default function FounderPortfolio() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Outline the scope, thesis, or collaboration..."
-                        className="w-full px-4 py-3 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
+                        className="w-full px-4 py-3 text-base sm:text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-900 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
                       />
                     </div>
 
@@ -923,9 +932,9 @@ export default function FounderPortfolio() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto w-full pt-16 border-t border-neutral-200 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono tracking-[0.35em] text-neutral-500 uppercase gap-6">
+        <div className="max-w-6xl mx-auto w-full pt-12 sm:pt-16 border-t border-neutral-200 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono tracking-[0.25em] sm:tracking-[0.35em] text-neutral-500 uppercase gap-4 sm:gap-6 text-center sm:text-left">
           <span>© {new Date().getFullYear()} ANEES ARK — ALL RIGHTS RESERVED</span>
-          <div className="flex gap-8">
+          <div className="flex gap-6 sm:gap-8">
             <a 
               href="https://www.instagram.com/anees_ark/" 
               target="_blank" 
@@ -943,7 +952,7 @@ export default function FounderPortfolio() {
               LINKEDIN
             </a>
           </div>
-          <span>BERLIN / LONDON</span>
+        
         </div>
       </footer>
 

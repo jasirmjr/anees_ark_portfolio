@@ -13,13 +13,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur-md border-b border-neutral-200/80 px-6 py-5 text-neutral-900 transition-all md:px-[6%] md:py-5">
+    <nav className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur-md border-b border-neutral-200/80 px-4 sm:px-6 py-4 sm:py-5 text-neutral-900 transition-all md:px-[6%]">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between">
         
         {/* Logo / Brand Name */}
         <a 
           href="#" 
-          className="text-xl font-extrabold tracking-tight text-neutral-950 transition-opacity hover:opacity-80 md:text-2xl"
+          onClick={(e) => {
+            scrollToSection(e, 'root');
+            setIsMenuOpen(false);
+          }}
+          className="text-xl font-extrabold tracking-tight text-neutral-950 transition-opacity hover:opacity-80 sm:text-2xl"
         >
           Anees Ark<span className="text-[#ff5500]">.</span>
         </a>
@@ -70,9 +74,10 @@ const Navbar = () => {
 
         {/* Mobile Hamburger Button */}
         <button 
-          className="z-50 flex h-6 w-6 flex-col justify-center gap-1.5 border-0 bg-transparent p-0 md:hidden"
+          className="z-50 flex h-8 w-8 items-center justify-center flex-col gap-1.5 border-0 bg-transparent p-1 md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
+          aria-label="Toggle navigation menu"
+          aria-expanded={isMenuOpen}
         >
           <span className={`h-0.5 w-6 bg-neutral-900 transition-all duration-300 ${isMenuOpen ? 'translate-y-2 rotate-45' : ''}`}></span>
           <span className={`h-0.5 w-6 bg-neutral-900 transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
@@ -81,33 +86,41 @@ const Navbar = () => {
 
       </div>
 
-      {/* Mobile Drawer Menu */}
-      <div className={`fixed inset-x-0 top-[73px] z-40 flex flex-col gap-6 border-b border-neutral-200 bg-white/95 px-6 py-8 shadow-xl backdrop-blur-xl transition-all duration-300 md:hidden ${
-        isMenuOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible pointer-events-none'
+      {/* Mobile Backdrop Overlay (Tap to close) */}
+      {isMenuOpen && (
+        <div 
+          className="fixed inset-0 top-[65px] sm:top-[73px] bg-black/20 backdrop-blur-xs z-30 md:hidden animate-fade-in"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer Menu Attached Directly to Nav Bottom */}
+      <div className={`absolute top-full left-0 right-0 z-40 flex flex-col gap-5 border-b border-neutral-200 bg-white/95 px-6 py-8 shadow-2xl backdrop-blur-xl transition-all duration-300 md:hidden ${
+        isMenuOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-3 invisible pointer-events-none'
       }`}>
         <a 
-          className="text-lg font-medium text-neutral-700 transition-colors hover:text-black" 
+          className="text-base font-medium text-neutral-800 transition-colors hover:text-black py-1" 
           href="#about" 
           onClick={(e) => scrollToSection(e, 'about')}
         >
           About
         </a>
         <a 
-          className="text-lg font-medium text-neutral-700 transition-colors hover:text-black" 
+          className="text-base font-medium text-neutral-800 transition-colors hover:text-black py-1" 
           href="#ventures" 
           onClick={(e) => scrollToSection(e, 'ventures')}
         >
           Ventures
         </a>
         <a 
-          className="text-lg font-medium text-neutral-700 transition-colors hover:text-black" 
+          className="text-base font-medium text-neutral-800 transition-colors hover:text-black py-1" 
           href="#philosophy" 
           onClick={(e) => scrollToSection(e, 'philosophy')}
         >
           Vision & Mission
         </a>
         <a 
-          className="text-lg font-medium text-neutral-700 transition-colors hover:text-black" 
+          className="text-base font-medium text-neutral-800 transition-colors hover:text-black py-1" 
           href="#contact" 
           onClick={(e) => scrollToSection(e, 'contact')}
         >
@@ -116,7 +129,7 @@ const Navbar = () => {
         
         <a 
           href="#contact" 
-          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[#ff5500] py-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[#ff5500] py-3 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
           onClick={(e) => scrollToSection(e, 'contact')}
         >
           <span>Get in touch</span>
