@@ -4,10 +4,7 @@ import heroImage from '../../assets/anees.png';
 
 export default function FounderPortfolio() {
   const [scrollY, setScrollY] = useState(0);
-  const [rotation, setRotation] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const requestRef = useRef();
+  const [portraitIndex, setPortraitIndex] = useState(0);
 
   // ──────────────────────────────────────────────
   // CONTACT FORM STATE & HANDLER (WEB3FORMS)
@@ -178,74 +175,10 @@ export default function FounderPortfolio() {
     return () => window.removeEventListener('wheel', handleWheel);
   }, [activeVentureIndex, ventures.length]);
 
-  // Smooth continuous auto-spin for 3D Arc
-  useEffect(() => {
-    const animate = () => {
-      if (!isDragging) {
-        setRotation((prev) => prev - 0.12);
-      }
-      requestRef.current = requestAnimationFrame(animate);
-    };
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [isDragging]);
-
-  // Responsive 3D Arc Radius
-  const [radius, setRadius] = useState(434);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === 'undefined') return;
-      const w = window.innerWidth;
-      if (w < 480) {
-        setRadius(230);
-      } else if (w < 768) {
-        setRadius(300);
-      } else if (w < 1024) {
-        setRadius(370);
-      } else {
-        setRadius(434);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Drag Handlers for 3D Arc (Responsive touch + mouse)
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    const clientX = e.pageX ?? e.touches?.[0]?.clientX ?? e.touches?.[0]?.pageX;
-    setStartX(clientX);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const clientX = e.pageX ?? e.touches?.[0]?.clientX ?? e.touches?.[0]?.pageX;
-    if (clientX === undefined) return;
-    const delta = (clientX - startX) * 0.35;
-    setRotation((prev) => prev + delta);
-    setStartX(clientX);
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
-
-  const arcCards = [
-    { type: 'image', src: heroImage, title: 'ANEES ARK' },
-    { type: 'image', src: '/anees (2).png', title: 'STUDIO VOID' },
-    { type: 'image', src: '/anees (2).png', title: 'ARK CAPITAL' },
-    { type: 'video', src: '/anees (2).png', title: 'KINETIC LABS' },
-    { type: 'image', src: '/anees (2).png', title: 'MONO CRAFT' },
-    { type: 'image', src: '/anees (2).png', title: 'SPATIAL FORM' },
-    { type: 'image', src: '/anees (2).png', title: 'EDITION NO. 07' },
-  ];
-
-  const totalCards = arcCards.length;
-
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#0a0a0a] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-neutral-900 selection:text-white antialiased overflow-x-clip">
 
-      {/* Needle Mechanical Vibration & Recoil Keyframes */}
+      {/* Keyframes for Section 1 Marquee & Section 2 Needle */}
       <style>{`
         @keyframes needleVibrate {
           0% { transform: translateY(-50%) translateX(0px) scale(1); }
@@ -257,97 +190,227 @@ export default function FounderPortfolio() {
         .needle-tick-active {
           animation: needleVibrate 0.22s cubic-bezier(0.25, 1, 0.5, 1);
         }
+        @keyframes aneesMarqueeRTL {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-50%, 0, 0); }
+        }
       `}</style>
 
       {/* ──────────────────────────────────────────────
-          SECTION 1: 3D CYLINDRICAL CURVED ARC HERO
+          SECTION 1: EDITORIAL EXECUTIVE HERO
       ────────────────────────────────────────────── */}
-      <section 
-        className="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-12 overflow-hidden select-none gap-4 sm:gap-6"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleMouseDown}
-        onTouchMove={handleMouseMove}
-        onTouchEnd={handleMouseUp}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-neutral-200/40 rounded-full blur-[140px] pointer-events-none" />
+      <section className="relative min-h-[calc(100vh-80px)] flex flex-col justify-between pt-6 sm:pt-8 pb-6 px-5 sm:px-10 md:px-[6%] border-b border-neutral-200 bg-white overflow-hidden">
+        
+        {/* Ambient Subtle Architectural Mesh Lighting */}
+        <div className="absolute top-1/4 -right-32 w-[600px] h-[600px] bg-neutral-100/90 rounded-full blur-[140px] pointer-events-none -z-0" />
+        <div className="absolute -bottom-24 -left-24 w-[450px] h-[450px] bg-[#ff5500]/[0.035] rounded-full blur-[120px] pointer-events-none -z-0" />
 
-        <div className="relative z-20 text-center max-w-4xl mx-auto space-y-3 sm:space-y-4 px-2">
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight uppercase leading-[0.92] text-neutral-950">
-            ANEES<br />
-            <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-500 bg-clip-text text-transparent">
-              ARK 
-            </span>
-          </h1>
-
-          <p className="text-[11px] sm:text-xs md:text-sm font-normal tracking-[0.15em] sm:tracking-[0.2em] text-neutral-600 max-w-xl mx-auto uppercase leading-relaxed px-2">
-            Architecting ideas into meaningful ventures.
-          </p>
-        </div>
-
-        <div 
-          className="relative w-full max-w-5xl h-[220px] sm:h-[270px] md:h-[310px] flex items-center justify-center mt-1 sm:mt-2"
-          style={{ 
-            perspective: '1000px',
-            transform: `translateY(${scrollY * 0.08}px)`
-          }}
-        >
-          <div
-            className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
-            style={{
-              transformStyle: 'preserve-3d',
-              transform: `rotateX(${-4 + scrollY * 0.02}deg)`
-            }}
-          >
-            {arcCards.map((card, idx) => {
-              const angle = (idx * (360 / totalCards)) + rotation;
-              const rad = (angle * Math.PI) / 180;
-              const z = Math.cos(rad) * radius;
-              const x = Math.sin(rad) * radius;
-              
-              const isFacingFront = z > -120;
-              const opacity = Math.max(0.15, (z + 160) / (radius + 160));
-              const yArch = Math.pow(Math.abs(Math.sin(rad)), 2) * 25;
-
-              return (
-                <div
-                  key={idx}
-                  className="absolute w-28 sm:w-36 md:w-44 h-40 sm:h-52 md:h-64 rounded-xl overflow-hidden border border-neutral-200/90 bg-white shadow-xl transition-all duration-100 ease-out pointer-events-none"
-                  style={{
-                    transform: `translate3d(${x}px, ${yArch}px, ${z}px) rotateY(${angle}deg)`,
-                    opacity: isFacingFront ? opacity : 0.05,
-                    zIndex: Math.round(z + radius),
-                    filter: `brightness(${Math.max(0.7, (z + radius) / (radius * 1.3))}) contrast(105%)`
-                  }}
-                >
-                  {card.type === 'video' ? (
-                    <video
-                      src={card.src}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={card.src}
-                      alt={card.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                  <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-between items-center text-[7px] sm:text-[8px] tracking-widest uppercase font-medium text-white">
-                    <span className="truncate max-w-[75%]">{card.title}</span>
-                    <span>0{idx + 1}</span>
-                  </div>
-                </div>
-              );
-            })}
+        {/* Low-Opacity Animated ANEES ARK Background Typography (Right to Left) */}
+        <div className="absolute top-[32%] sm:top-[30%] lg:top-[32%] -translate-y-1/2 inset-x-0 w-full overflow-hidden pointer-events-none select-none z-0">
+          <div className="flex whitespace-nowrap w-max animate-[aneesMarqueeRTL_32s_linear_infinite] will-change-transform">
+            {/* Set 1 */}
+            <div className="flex items-center gap-12 sm:gap-20 shrink-0 pr-12 sm:pr-20">
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+            </div>
+            {/* Set 2 (Identical duplicate for seamless infinite loop) */}
+            <div className="flex items-center gap-12 sm:gap-20 shrink-0 pr-12 sm:pr-20" aria-hidden="true">
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+              <span className="text-[5rem] sm:text-[8rem] md:text-[11rem] lg:text-[14rem] xl:text-[16rem] font-black italic tracking-tighter uppercase text-neutral-950/[0.065] leading-none">
+                ANEES ARK
+              </span>
+              <span className="text-[2.5rem] sm:text-[4.5rem] md:text-[6rem] text-neutral-950/[0.05]">✦</span>
+            </div>
           </div>
         </div>
+
+       
+
+        {/* Central 2-Column Split: Editorial Masthead + Executive Portrait */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center my-auto py-6 sm:py-10">
+          
+          {/* Left Column: Bold Display & Action */}
+          <div className="lg:col-span-7 flex flex-col justify-center space-y-6 sm:space-y-7">
+            
+            
+
+            <div className="relative inline-block w-fit">
+              <h1 className="text-[2.2rem] sm:text-5xl md:text-6xl lg:text-[4.2rem] xl:text-[5.4rem] 2xl:text-[6.2rem] font-black italic tracking-tight sm:tracking-tighter uppercase leading-none text-neutral-950 whitespace-nowrap drop-shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
+                ANEES ARK
+              </h1>
+            </div>
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-neutral-300/80 bg-neutral-50 shadow-2xs text-[10px] font-mono tracking-[0.25em] uppercase text-neutral-700 w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-neutral-950" />
+              FOUNDER & CREATIVE DIRECTOR
+            </div>
+
+            <p className="text-sm sm:text-base md:text-lg font-medium tracking-[0.08em] uppercase text-neutral-800 leading-relaxed max-w-xl">
+              Architecting ideas into meaningful ventures.
+            </p>
+
+            <p className="text-xs sm:text-sm font-light text-neutral-600 leading-relaxed max-w-lg">
+              Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies that shape the modern economy.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-4 pt-1">
+              <a 
+                href="#ventures" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('ventures')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="group relative inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-sm hover:shadow-lg active:scale-95 overflow-hidden"
+              >
+                <span className="relative z-10">Explore Ventures</span>
+                <span className="relative z-10 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs group-hover:translate-y-0.5 transition-transform">
+                  ↓
+                </span>
+              </a>
+
+              <a 
+                href="#contact" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full border border-neutral-300 bg-white hover:border-neutral-950 text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-all shadow-2xs hover:shadow-sm active:scale-95"
+              >
+                <span>Dispatch Inquiry</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-neutral-200/80 max-w-lg">
+              <div className="p-3 sm:p-4 rounded-xl border border-neutral-200/80 bg-neutral-50/60 hover:bg-white hover:border-neutral-300 hover:shadow-xs transition-all group">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-light text-neutral-950 tracking-tight">04</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5500] opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <span className="block text-[8px] sm:text-[9px] font-mono tracking-widest text-neutral-400 uppercase">ENTITIES</span>
+                <div className="w-full h-0.5 bg-neutral-200 rounded-full mt-2 overflow-hidden">
+                  <div className="w-full h-full bg-neutral-900 rounded-full group-hover:bg-[#ff5500] transition-colors" />
+                </div>
+              </div>
+
+              <div className="p-3 sm:p-4 rounded-xl border border-neutral-200/80 bg-neutral-50/60 hover:bg-white hover:border-neutral-300 hover:shadow-xs transition-all group">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-light text-neutral-950 tracking-tight">08+</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 group-hover:bg-neutral-900 transition-colors" />
+                </div>
+                <span className="block text-[8px] sm:text-[9px] font-mono tracking-widest text-neutral-400 uppercase">YEARS CRAFT</span>
+                <div className="w-full h-0.5 bg-neutral-200 rounded-full mt-2 overflow-hidden">
+                  <div className="w-4/5 h-full bg-neutral-900 rounded-full group-hover:bg-neutral-950 transition-colors" />
+                </div>
+              </div>
+
+              <div className="p-3 sm:p-4 rounded-xl border border-neutral-200/80 bg-neutral-50/60 hover:bg-white hover:border-neutral-300 hover:shadow-xs transition-all group">
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-light text-neutral-950 tracking-tight">100%</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                </div>
+                <span className="block text-[8px] sm:text-[9px] font-mono tracking-widest text-neutral-400 uppercase">CREATOR-FIRST</span>
+                <div className="w-full h-0.5 bg-neutral-200 rounded-full mt-2 overflow-hidden">
+                  <div className="w-full h-full bg-emerald-500 rounded-full" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Right Column: Framed Executive Portrait with Dual-Lens Switcher */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white shadow-[0_20px_50px_rgba(0,0,0,0.06)] group">
+              {/* Corner Telemetry Marks */}
+              <span className="absolute top-4 left-4 text-[9px] font-mono text-neutral-400 z-20 pointer-events-none">+</span>
+              <span className="absolute top-4 right-4 text-[9px] font-mono text-neutral-400 z-20 pointer-events-none">+</span>
+              <span className="absolute bottom-4 left-4 text-[9px] font-mono text-neutral-400 z-20 pointer-events-none">+</span>
+              <span className="absolute bottom-4 right-4 text-[9px] font-mono text-neutral-400 z-20 pointer-events-none">+</span>
+
+              {/* Floating Badges */}
+              <div className="absolute top-5 inset-x-5 flex justify-between items-center z-20">
+                <span className="text-[9px] font-mono tracking-widest px-3 py-1 rounded-full border border-neutral-200/80 bg-white/90 backdrop-blur-md text-neutral-800 uppercase font-medium shadow-2xs">
+                  ANEES ARK // 2026
+                </span>
+                
+                {/* Interactive Dual-Lens Switcher Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPortraitIndex((prev) => (prev === 0 ? 1 : 0));
+                  }}
+                  className="text-[9px] font-mono tracking-wider px-3 py-1 rounded-full border border-neutral-300 bg-white/95 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all shadow-2xs text-neutral-800 uppercase font-medium flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                  title="Toggle portrait lens"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5500]" />
+                  <span>{portraitIndex === 0 ? 'VIEW 02 →' : 'VIEW 01 →'}</span>
+                </button>
+              </div>
+
+              {/* Founder Image Crossfade */}
+              <img 
+                src={portraitIndex === 0 ? heroImage : '/anees (2).png'} 
+                alt="Anees Ark" 
+                className="w-full h-full object-cover object-top filter brightness-[1.02] contrast-[1.02] group-hover:scale-102 transition-all duration-700 ease-out"
+              />
+
+              {/* Subtle Bottom Scrim Vignette */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+              {/* Bottom Floating Card: Ecosystem Link */}
+              <div className="absolute inset-x-4 bottom-4 p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/80 shadow-lg flex items-center justify-between gap-3 z-20">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-neutral-400">
+                      FOUNDED ECOSYSTEM // 4 ACTIVE
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {['LYF ADS', 'SEKRICK', "CREATER'S LAB", 'PITCH STUDIO'].map((name, i) => (
+                      <span key={i} className="text-[9px] font-mono px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-800 font-medium">
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <a 
+                  href="#ventures" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('ventures')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="shrink-0 w-8 h-8 rounded-full bg-neutral-950 text-white flex items-center justify-center hover:bg-[#ff5500] transition-colors shadow-xs group-hover:translate-x-0.5"
+                  aria-label="View Ventures"
+                >
+                  →
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
       </section>
 
       {/* ──────────────────────────────────────────────
