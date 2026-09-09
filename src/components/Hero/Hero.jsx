@@ -1,7 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import heroImage from '../../assets/anees.png';
 
 export default function FounderPortfolio() {
+  const [scrollY, setScrollY] = useState(0);
+  const [rotation, setRotation] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const requestRef = useRef();
+
+  // Scroll listener for parallax
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Smooth continuous auto-spin when not dragging
+  useEffect(() => {
+    const animate = () => {
+      if (!isDragging) {
+        setRotation((prev) => prev - 0.12); // Continuous auto-slide speed
+      }
+      requestRef.current = requestAnimationFrame(animate);
+    };
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [isDragging]);
+
+  // Mouse / Touch Drag Handlers for the 3D Arc
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX || e.touches?.[0].pageX);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const currentX = e.pageX || e.touches?.[0].pageX;
+    const delta = (currentX - startX) * 0.35;
+    setRotation((prev) => prev + delta);
+    setStartX(currentX);
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
   const scrollTo = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -9,64 +50,133 @@ export default function FounderPortfolio() {
     }
   };
 
+  // 3D Arc Cards (Mix of video & high-contrast stills)
+  const arcCards = [
+    { type: 'image', src: heroImage, title: 'ANEES ARK' },
+    { type: 'video', src: 'https://assets.mixkit.co/videos/preview/mixkit-ink-swirling-in-water-in-slow-motion-42502-large.mp4', title: 'STUDIO VOID' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80', title: 'ARK CAPITAL' },
+    { type: 'video', src: 'https://assets.mixkit.co/videos/preview/mixkit-black-and-white-city-aerial-view-39828-large.mp4', title: 'KINETIC LABS' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80', title: 'MONO CRAFT' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80', title: 'SPATIAL FORM' },
+    { type: 'image', src: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800&auto=format&fit=crop&q=80', title: 'EDITION NO. 07' },
+  ];
+
+  const totalCards = arcCards.length;
+  // Scaled down 30% from 620 to 434 to keep perfect proportional spacing
+  const radius = 434;
+
   return (
-    <div className="min-h-screen bg-[#050505] text-[#e8e8e8] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-white selection:text-black antialiased">
+    <div className="min-h-screen bg-[#050505] text-[#e8e8e8] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-white selection:text-black antialiased overflow-x-hidden">
 
       {/* ──────────────────────────────────────────────
           TOP MINIMAL EDITORIAL BAR
       ────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md px-8 sm:px-16 py-8 flex items-center justify-between text-[11px] font-extralight tracking-[0.35em] uppercase border-b border-neutral-900/50">
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-white transition-colors">
-          ANEES ARK
-        </button>
-        <div className="flex items-center gap-10 sm:gap-14">
-          <button onClick={() => scrollTo('ventures')} className="hover:text-white transition-colors">COMPANIES</button>
-          <button onClick={() => scrollTo('works')} className="hover:text-white transition-colors">WORKS</button>
-          <button onClick={() => scrollTo('index')} className="hover:text-white transition-colors">INDEX</button>
-          <button onClick={() => scrollTo('contact')} className="hover:text-white transition-colors">CONTACT</button>
-        </div>
-      </nav>
+     
 
 
       {/* ──────────────────────────────────────────────
-          SECTION 1: HERO POSTER (Francesco Gioia Composition)
+          SECTION 1: 3D CYLINDRICAL CURVED ARC HERO
       ────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-between pt-36 pb-16 px-8 sm:px-16">
-        {/* Editorial Sub-headers */}
-        <div className="flex justify-between items-center text-[10px] tracking-[0.4em] uppercase text-neutral-500 font-extralight">
-          <span>FOUNDER & CREATIVE DIRECTOR</span>
-          <span>EST. 2018</span>
-        </div>
+      <section 
+        className="relative min-h-screen flex flex-col items-center justify-between pt-36 pb-16 px-4 sm:px-12 overflow-hidden select-none"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={handleMouseUp}
+      >
+        {/* Subtle Ambient Radial Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-white/[0.03] rounded-full blur-[140px] pointer-events-none" />
 
-        {/* Central High-Impact Typography & Cutout Composition */}
-        <div className="relative my-auto flex flex-col items-center justify-center text-center py-20">
-          
-          {/* Overlapping Floating Portrait */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 md:w-80 h-64 sm:h-80 md:h-96 z-0 overflow-hidden pointer-events-none opacity-85">
-            <img
-              src={heroImage}
-              alt="Anees Ark"
-              className="w-full h-full object-cover grayscale contrast-125 brightness-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-transparent to-[#050505]" />
+        {/* Central Headlines & Call To Action */}
+        <div className="relative z-20 text-center max-w-4xl mx-auto space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-800 bg-neutral-950/60 text-[10px] tracking-[0.3em] uppercase text-neutral-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            FOUNDER & CREATIVE DIRECTOR
           </div>
 
-          {/* Huge Thin Stacked Name */}
-          <h1 className="relative z-10 text-6xl sm:text-8xl md:text-[11rem] font-thin tracking-tight leading-[0.88] uppercase select-none mix-blend-difference">
-            HELLO, I’M <br />
-            <span className="font-light">ANEES</span> <br />
-            ARK
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-thin tracking-tight uppercase leading-[0.92] text-neutral-100">
+           ANEES<br />
+            <span className="font-light italic bg-gradient-to-r from-neutral-100 via-neutral-400 to-neutral-600 bg-clip-text text-transparent">
+            ARK 
+            </span>
           </h1>
+
+          <p className="text-xs sm:text-sm font-extralight tracking-[0.2em] text-neutral-400 max-w-xl mx-auto uppercase leading-relaxed">
+            Directing platforms, hardware ventures, and minimal visual systems.
+          </p>
+
+        
+        </div>
+
+        {/* 3D Arc Viewport (Proportionally tightened) */}
+        <div 
+          className="relative w-full max-w-5xl h-[300px] sm:h-[360px] flex items-center justify-center my-4"
+          style={{ 
+            perspective: '1000px',
+            transform: `translateY(${scrollY * 0.08}px)`
+          }}
+        >
+          <div
+            className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
+            style={{
+              transformStyle: 'preserve-3d',
+              transform: `rotateX(${-4 + scrollY * 0.02}deg)`
+            }}
+          >
+            {arcCards.map((card, idx) => {
+              const angle = (idx * (360 / totalCards)) + rotation;
+              const rad = (angle * Math.PI) / 180;
+              const z = Math.cos(rad) * radius;
+              const x = Math.sin(rad) * radius;
+              
+              const isFacingFront = z > -120;
+              const opacity = Math.max(0.15, (z + 160) / (radius + 160));
+              const yArch = Math.pow(Math.abs(Math.sin(rad)), 2) * 25;
+
+              return (
+                <div
+                  key={idx}
+                  className="absolute w-32 sm:w-40 md:w-44 h-44 sm:h-56 md:h-64 rounded-xl overflow-hidden border border-neutral-700/60 bg-neutral-900 shadow-xl transition-all duration-100 ease-out pointer-events-none"
+                  style={{
+                    transform: `translate3d(${x}px, ${yArch}px, ${z}px) rotateY(${angle}deg)`,
+                    opacity: isFacingFront ? opacity : 0.05,
+                    zIndex: Math.round(z + radius),
+                    filter: `brightness(${Math.max(0.4, (z + radius) / (radius * 1.5))}) contrast(115%) grayscale(100%)`
+                  }}
+                >
+                  {card.type === 'video' ? (
+                    <video
+                      src={card.src}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={card.src}
+                      alt={card.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  
+                  {/* Card Vignette & Meta Tag */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/20" />
+                  <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[8px] tracking-widest uppercase font-extralight text-neutral-300">
+                    <span className="truncate max-w-[80%]">{card.title}</span>
+                    <span>0{idx + 1}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Hero Bottom Navigation Hint */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] tracking-[0.3em] uppercase text-neutral-500 font-extralight gap-4">
-          <span>LONDON / WORLDWIDE</span>
-          <span>SCALING CREATIVE CAPITAL</span>
-          <button onClick={() => scrollTo('thesis')} className="text-neutral-300 hover:text-white transition-colors">
-            EXPLORE ↓
-          </button>
-        </div>
+       
       </section>
 
 
@@ -113,7 +223,6 @@ export default function FounderPortfolio() {
             </span>
           </div>
 
-          {/* Minimal Venture List */}
           <div className="divide-y divide-neutral-900">
             {[
               { id: "01", name: "ARK CAPITAL", role: "Venture Builder & Incubator", status: "Active", period: "2023 — Present" },
@@ -144,11 +253,9 @@ export default function FounderPortfolio() {
 
       {/* ──────────────────────────────────────────────
           SECTION 4: CURATED GALLERY / VISUAL WORKS
-          (Mimicking the 4-card catalog from Behance)
       ────────────────────────────────────────────── */}
       <section id="works" className="py-40 px-8 sm:px-16 border-t border-neutral-900/60">
         <div className="max-w-6xl mx-auto">
-          {/* Exact Francesco Header Style */}
           <div className="flex justify-between items-end mb-20">
             <div>
               <span className="text-[10px] font-extralight tracking-[0.4em] uppercase text-neutral-500 block mb-3">03 / CURATION</span>
@@ -160,7 +267,6 @@ export default function FounderPortfolio() {
             </div>
           </div>
 
-          {/* 4 Cards with Tall Aspect Ratio */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { title: "NOTES ON VISION", count: "12 ARTIFACTS", img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80" },
@@ -190,31 +296,133 @@ export default function FounderPortfolio() {
       {/* ──────────────────────────────────────────────
           SECTION 5: MILESTONES & LEADERSHIP INDEX
       ────────────────────────────────────────────── */}
-      <section id="index" className="py-40 px-8 sm:px-16 border-t border-neutral-900/60">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
-          <div className="md:col-span-4">
-            <span className="text-[10px] font-extralight tracking-[0.4em] uppercase text-neutral-500 block mb-4">04 / METRICS</span>
-            <h2 className="text-3xl sm:text-5xl font-thin tracking-wide uppercase">TRACK RECORD</h2>
+ {/* ──────────────────────────────────────────────
+          SECTION 5: MILESTONES & LEADERSHIP INDEX (IMPACT REDESIGN)
+      ────────────────────────────────────────────── */}
+      <section id="index" className="relative py-44 px-8 sm:px-16 border-t border-neutral-900/80 bg-[#050505] overflow-hidden">
+        
+        {/* Subtle Architectural Watermark */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 text-[18vw] font-thin text-white/[0.015] pointer-events-none select-none uppercase tracking-tighter leading-none">
+          IMPACT
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          
+          {/* Header Row with Status Indicator */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between pb-16 border-b border-neutral-900 gap-8">
+            <div>
+              <div className="flex items-center gap-3 text-[10px] font-extralight tracking-[0.45em] uppercase text-neutral-500 mb-4">
+                <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+                <span>04 / TELEMETRY & METRICS</span>
+              </div>
+              <h2 className="text-4xl sm:text-6xl md:text-7xl font-thin tracking-tight uppercase text-neutral-100">
+                TRACK <span className="font-light italic text-neutral-400">RECORD.</span>
+              </h2>
+            </div>
+
+            <div className="text-left md:text-right flex flex-col md:items-end text-[10px] font-extralight tracking-[0.3em] uppercase text-neutral-500">
+              <span>SYSTEM AUDIT: VERIFIED</span>
+              <span className="text-neutral-300 mt-1">2018 — 2026 CUMULATIVE SCALE</span>
+            </div>
           </div>
 
-          <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-2 gap-12 sm:gap-16">
-            <div>
-              <span className="text-4xl sm:text-6xl font-thin tracking-tight block mb-2">$42M+</span>
-              <p className="text-[11px] font-extralight tracking-[0.25em] uppercase text-neutral-400">Total Capital Raised</p>
-            </div>
-            <div>
-              <span className="text-4xl sm:text-6xl font-thin tracking-tight block mb-2">3</span>
-              <p className="text-[11px] font-extralight tracking-[0.25em] uppercase text-neutral-400">Companies Founded</p>
-            </div>
-            <div>
-              <span className="text-4xl sm:text-6xl font-thin tracking-tight block mb-2">12</span>
-              <p className="text-[11px] font-extralight tracking-[0.25em] uppercase text-neutral-400">Global Design Honors</p>
-            </div>
-            <div>
-              <span className="text-4xl sm:text-6xl font-thin tracking-tight block mb-2">100K+</span>
-              <p className="text-[11px] font-extralight tracking-[0.25em] uppercase text-neutral-400">Active Platform Users</p>
-            </div>
+          {/* Precision 2x2 Architectural Metric Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-neutral-900 border-b border-neutral-900">
+            {[
+              {
+                id: "01 // CAPITAL",
+                val: "$42M+",
+                label: "Total Capital Raised",
+                meta: "Across 3 institutional rounds (Seed to Series A)",
+                status: "98.4% Efficiency",
+                bars: [30, 55, 40, 80, 65, 90, 100]
+              },
+              {
+                id: "02 // ECOSYSTEM",
+                val: "03",
+                label: "Companies Founded",
+                meta: "Ark Capital, Studio Void, Kinetic Labs",
+                status: "2 Active / 1 Scaling",
+                bars: [45, 65, 50, 95, 80, 100, 90]
+              },
+              {
+                id: "03 // HONORS",
+                val: "12",
+                label: "Global Design Honors",
+                meta: "Cannes Lion, Red Dot Best, D&AD recognition",
+                status: "Archived & Cataloged",
+                bars: [25, 40, 60, 50, 75, 85, 100]
+              },
+              {
+                id: "04 // AUDIENCE",
+                val: "100K+",
+                label: "Active Platform Users",
+                meta: "Enterprise creators and interface architects",
+                status: "+34% YoY Retention",
+                bars: [35, 50, 70, 60, 80, 90, 100]
+              }
+            ].map((metric, idx) => (
+              <div
+                key={idx}
+                className={`group relative p-10 sm:p-14 transition-all duration-500 hover:bg-white/[0.02] cursor-crosshair overflow-hidden ${
+                  idx >= 2 ? 'md:border-t border-neutral-900' : ''
+                }`}
+              >
+                {/* Precision Corner Crosshairs (+) */}
+                <span className="absolute top-4 left-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
+                <span className="absolute top-4 right-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
+                <span className="absolute bottom-4 left-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
+                <span className="absolute bottom-4 right-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
+
+                {/* Card Top Indicator */}
+                <div className="flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-500 mb-10">
+                  <span>{metric.id}</span>
+                  <span className="uppercase tracking-[0.2em] group-hover:text-neutral-200 transition-colors">
+                    {metric.status}
+                  </span>
+                </div>
+
+                {/* Hero Numerical Value & Reactive Frequency Sparkline */}
+                <div className="flex items-baseline justify-between gap-6 mb-4">
+                  <span className="text-6xl sm:text-7xl md:text-8xl font-thin tracking-tighter uppercase text-neutral-100 group-hover:text-white transition-all duration-300 group-hover:translate-x-1">
+                    {metric.val}
+                  </span>
+
+                  {/* Audio / Data Frequency Visualizer */}
+                  <div className="flex items-end gap-1 h-10 pb-2">
+                    {metric.bars.map((bar, barIdx) => (
+                      <div
+                        key={barIdx}
+                        className="w-1 bg-neutral-800 group-hover:bg-white transition-all duration-500 rounded-full"
+                        style={{
+                          height: `${bar * 0.45}%`,
+                          transitionDelay: `${barIdx * 35}ms`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Metric Title & Deep Subtext */}
+                <h3 className="text-sm font-light tracking-[0.25em] uppercase text-neutral-200 mb-2">
+                  {metric.label}
+                </h3>
+                <p className="text-xs font-extralight tracking-wide text-neutral-500 group-hover:text-neutral-400 transition-colors max-w-sm leading-relaxed">
+                  {metric.meta}
+                </p>
+
+                {/* Subtle Hover Radial Spotlight */}
+                <div className="absolute -bottom-24 -right-24 w-60 h-60 bg-white/[0.03] rounded-full blur-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              </div>
+            ))}
           </div>
+
+          {/* Bottom Ledger Details */}
+          <div className="mt-8 flex flex-col sm:flex-row justify-between items-center text-[9px] font-mono tracking-[0.3em] uppercase text-neutral-600 gap-4">
+            <span>SOURCE: INDEPENDENT ENTERPRISE VALUATION & AUDIT RECORDS</span>
+            <span>CURRENCY: USD // REAL-TIME METRIC CACHE</span>
+          </div>
+
         </div>
       </section>
 
