@@ -8,18 +8,82 @@ export default function FounderPortfolio() {
   const [startX, setStartX] = useState(0);
   const requestRef = useRef();
 
-  // Scroll listener for parallax
+  // ──────────────────────────────────────────────
+  // VENTURES DATA & INTERCEPTOR CONTROLS
+  // ──────────────────────────────────────────────
+  const ventures = [
+    { id: "01", name: "ARK CAPITAL", role: "Venture Builder & Incubator", status: "Active", period: "2023 — Present" },
+    { id: "02", name: "STUDIO VOID", role: "Creative Direction & Brand Architecture", status: "Active", period: "2021 — Present" },
+    { id: "03", name: "KINETIC LABS", role: "Specialty Hardware & Experimental UI", status: "Scaling", period: "2024 — Present" },
+    { id: "04", name: "MONO CRAFT", role: "Editorial Publication & Curated Editions", status: "Archived", period: "2019 — 2023" },
+    { id: "05", name: "SPATIAL FORM", role: "Architectural & Spatial Research", status: "Active", period: "2024 — Present" }
+  ];
+
+  const [activeVentureIndex, setActiveVentureIndex] = useState(0);
+  const [isNeedleTicking, setIsNeedleTicking] = useState(false);
+  const venturesRef = useRef(null);
+  const isCooldownRef = useRef(false);
+  const ITEM_HEIGHT = 130;
+
+  // Parallax scroll listener for hero & visual cards
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Smooth continuous auto-spin when not dragging
+  // Wheel interceptor: locks scroll in place and advances one-by-one with haptic recoil
+  useEffect(() => {
+    const el = venturesRef.current;
+    if (!el) return;
+
+    const handleWheel = (e) => {
+      const rect = el.getBoundingClientRect();
+      const inViewThreshold = 90;
+      const isInFocus = rect.top <= inViewThreshold && rect.bottom >= (window.innerHeight - inViewThreshold);
+
+      if (!isInFocus) return;
+
+      const goingDown = e.deltaY > 0;
+      const goingUp = e.deltaY < 0;
+
+      // Allow natural scroll escape once you hit the bounds
+      if (goingDown && activeVentureIndex >= ventures.length - 1) return;
+      if (goingUp && activeVentureIndex <= 0) return;
+
+      // Intercept scroll to tick through items
+      e.preventDefault();
+
+      if (isCooldownRef.current || Math.abs(e.deltaY) < 18) return;
+
+      isCooldownRef.current = true;
+      setTimeout(() => {
+        isCooldownRef.current = false;
+      }, 380);
+
+      // Trigger mechanical vibration/kick
+      setIsNeedleTicking(true);
+      if (typeof window !== 'undefined' && window.navigator?.vibrate) {
+        window.navigator.vibrate(15);
+      }
+      setTimeout(() => setIsNeedleTicking(false), 220);
+
+      if (goingDown) {
+        setActiveVentureIndex((prev) => Math.min(prev + 1, ventures.length - 1));
+      } else if (goingUp) {
+        setActiveVentureIndex((prev) => Math.max(prev - 1, 0));
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [activeVentureIndex, ventures.length]);
+
+  // Smooth continuous auto-spin for 3D Arc
   useEffect(() => {
     const animate = () => {
       if (!isDragging) {
-        setRotation((prev) => prev - 0.12); // Continuous auto-slide speed
+        setRotation((prev) => prev - 0.12);
       }
       requestRef.current = requestAnimationFrame(animate);
     };
@@ -27,7 +91,7 @@ export default function FounderPortfolio() {
     return () => cancelAnimationFrame(requestRef.current);
   }, [isDragging]);
 
-  // Mouse / Touch Drag Handlers for the 3D Arc
+  // Drag Handlers for 3D Arc
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX || e.touches?.[0].pageX);
@@ -43,14 +107,6 @@ export default function FounderPortfolio() {
 
   const handleMouseUp = () => setIsDragging(false);
 
-  const scrollTo = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // 3D Arc Cards (Mix of video & high-contrast stills)
   const arcCards = [
     { type: 'image', src: heroImage, title: 'ANEES ARK' },
     { type: 'video', src: 'https://assets.mixkit.co/videos/preview/mixkit-ink-swirling-in-water-in-slow-motion-42502-large.mp4', title: 'STUDIO VOID' },
@@ -62,17 +118,24 @@ export default function FounderPortfolio() {
   ];
 
   const totalCards = arcCards.length;
-  // Scaled down 30% from 620 to 434 to keep perfect proportional spacing
   const radius = 434;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#e8e8e8] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-white selection:text-black antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-[#e8e8e8] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-white selection:text-black antialiased overflow-x-clip">
 
-      {/* ──────────────────────────────────────────────
-          TOP MINIMAL EDITORIAL BAR
-      ────────────────────────────────────────────── */}
-     
-
+      {/* Needle Mechanical Vibration & Recoil Keyframes */}
+      <style>{`
+        @keyframes needleVibrate {
+          0% { transform: translateY(-50%) translateX(0px) scale(1); }
+          25% { transform: translateY(-50%) translateX(12px) scale(1.14); }
+          50% { transform: translateY(-50%) translateX(-4px) scale(0.96); }
+          75% { transform: translateY(-50%) translateX(2px) scale(1.02); }
+          100% { transform: translateY(-50%) translateX(0px) scale(1); }
+        }
+        .needle-tick-active {
+          animation: needleVibrate 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+      `}</style>
 
       {/* ──────────────────────────────────────────────
           SECTION 1: 3D CYLINDRICAL CURVED ARC HERO
@@ -86,10 +149,8 @@ export default function FounderPortfolio() {
         onTouchMove={handleMouseMove}
         onTouchEnd={handleMouseUp}
       >
-        {/* Subtle Ambient Radial Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-white/[0.03] rounded-full blur-[140px] pointer-events-none" />
 
-        {/* Central Headlines & Call To Action */}
         <div className="relative z-20 text-center max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-800 bg-neutral-950/60 text-[10px] tracking-[0.3em] uppercase text-neutral-400">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -97,20 +158,17 @@ export default function FounderPortfolio() {
           </div>
 
           <h1 className="text-5xl sm:text-7xl md:text-8xl font-thin tracking-tight uppercase leading-[0.92] text-neutral-100">
-           ANEES<br />
+            ANEES<br />
             <span className="font-light italic bg-gradient-to-r from-neutral-100 via-neutral-400 to-neutral-600 bg-clip-text text-transparent">
-            ARK 
+              ARK 
             </span>
           </h1>
 
           <p className="text-xs sm:text-sm font-extralight tracking-[0.2em] text-neutral-400 max-w-xl mx-auto uppercase leading-relaxed">
             Directing platforms, hardware ventures, and minimal visual systems.
           </p>
-
-        
         </div>
 
-        {/* 3D Arc Viewport (Proportionally tightened) */}
         <div 
           className="relative w-full max-w-5xl h-[300px] sm:h-[360px] flex items-center justify-center my-4"
           style={{ 
@@ -163,7 +221,6 @@ export default function FounderPortfolio() {
                     />
                   )}
                   
-                  {/* Card Vignette & Meta Tag */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/20" />
                   <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-[8px] tracking-widest uppercase font-extralight text-neutral-300">
                     <span className="truncate max-w-[80%]">{card.title}</span>
@@ -174,11 +231,7 @@ export default function FounderPortfolio() {
             })}
           </div>
         </div>
-
-        {/* Hero Bottom Navigation Hint */}
-       
       </section>
-
 
       {/* ──────────────────────────────────────────────
           SECTION 2: FOUNDER'S THESIS & STATEMENT
@@ -207,49 +260,127 @@ export default function FounderPortfolio() {
         </div>
       </section>
 
-
       {/* ──────────────────────────────────────────────
-          SECTION 3: VENTURES & COMPANIES FOUNDED
+          SECTION 3: VENTURES (NEEDLE SNAPPING TICKER)
       ────────────────────────────────────────────── */}
-      <section id="ventures" className="py-40 px-8 sm:px-16 border-t border-neutral-900/60">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-baseline mb-24">
-            <div>
-              <span className="text-[10px] font-extralight tracking-[0.4em] uppercase text-neutral-500 block mb-3">02 / ECOSYSTEM</span>
-              <h2 className="text-4xl sm:text-6xl font-thin tracking-wide uppercase">VENTURES</h2>
-            </div>
-            <span className="text-[10px] font-extralight tracking-[0.3em] uppercase text-neutral-500 hidden sm:block">
-              FOUNDED & OPERATED
+      <section 
+        id="ventures" 
+        ref={venturesRef}
+        className="relative min-h-screen bg-[#050505] border-t border-neutral-900/80 flex flex-col justify-between py-16 sm:py-24 px-6 sm:px-16 select-none overflow-hidden"
+      >
+        {/* Top Header */}
+        <div className="max-w-6xl mx-auto w-full flex justify-between items-baseline border-b border-neutral-900/80 pb-6">
+          <div>
+            <span className="text-[10px] font-extralight tracking-[0.4em] uppercase text-neutral-500 block mb-2">
+              02 / ECOSYSTEM
             </span>
+            <h2 className="text-3xl sm:text-5xl font-thin tracking-wide uppercase text-neutral-100">
+              VENTURES
+            </h2>
           </div>
-
-          <div className="divide-y divide-neutral-900">
-            {[
-              { id: "01", name: "ARK CAPITAL", role: "Venture Builder & Incubator", status: "Active", period: "2023 — Present" },
-              { id: "02", name: "STUDIO VOID", role: "Creative Direction & Brand Architecture", status: "Active", period: "2021 — Present" },
-              { id: "03", name: "KINETIC LABS", role: "Specialty Hardware & Experimental UI", status: "Scaling", period: "2024 — Present" },
-              { id: "04", name: "MONO CRAFT", role: "Editorial Publication & Curated Editions", status: "Archived", period: "2019 — 2023" }
-            ].map((venture, i) => (
-              <div key={i} className="py-12 group flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-neutral-950/40 px-4 transition-colors">
-                <div className="flex items-baseline gap-8 md:gap-16">
-                  <span className="text-[11px] font-extralight tracking-widest text-neutral-600">{venture.id}</span>
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-thin uppercase tracking-wider group-hover:text-white transition-colors">{venture.name}</h3>
-                    <p className="text-xs font-extralight text-neutral-400 tracking-wide mt-1">{venture.role}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-10 text-[10px] font-extralight tracking-[0.3em] uppercase text-neutral-500">
-                  <span>{venture.status}</span>
-                  <span>{venture.period}</span>
-                  <span className="text-neutral-400 group-hover:translate-x-2 transition-transform">→</span>
-                </div>
-              </div>
-            ))}
+          <div className="text-right text-[10px] font-mono tracking-widest text-neutral-500 uppercase">
+            <span>INDEX [{String(activeVentureIndex + 1).padStart(2, '0')} / {String(ventures.length).padStart(2, '0')}]</span>
           </div>
         </div>
-      </section>
 
+        {/* Central Viewport */}
+        <div className="relative max-w-6xl mx-auto w-full h-[400px] flex items-center overflow-hidden">
+          
+          {/* Stationary Needle (Center Locked) */}
+          <div 
+            className={`absolute left-2 sm:left-6 z-30 flex items-center gap-4 pointer-events-none transition-transform ${
+              isNeedleTicking ? 'needle-tick-active' : ''
+            }`}
+            style={{
+              top: '50%',
+              transform: 'translateY(-50%)'
+            }}
+          >
+            <span className="text-4xl sm:text-6xl font-thin text-white leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+              →
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+          </div>
+
+          {/* Scrolling List: Item 0 starts centered on needle */}
+          <div 
+            className="w-full pl-20 sm:pl-32 transition-transform duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]"
+            style={{
+              transform: `translateY(calc(200px - ${ITEM_HEIGHT / 2}px - ${activeVentureIndex * ITEM_HEIGHT}px))`
+            }}
+          >
+            {ventures.map((venture, idx) => {
+              const distance = Math.abs(idx - activeVentureIndex);
+              const isCurrent = idx === activeVentureIndex;
+
+              return (
+                <div
+                  key={idx}
+                  style={{ height: `${ITEM_HEIGHT}px` }}
+                  onClick={() => {
+                    setActiveVentureIndex(idx);
+                    setIsNeedleTicking(true);
+                    setTimeout(() => setIsNeedleTicking(false), 220);
+                  }}
+                  className={`flex flex-col justify-center cursor-pointer transition-all duration-500 origin-left ${
+                    isCurrent
+                      ? 'opacity-100 blur-0 scale-100 text-white font-normal'
+                      : distance === 1
+                      ? 'opacity-25 blur-[2.5px] scale-95 text-neutral-400 font-extralight'
+                      : 'opacity-10 blur-[5px] scale-90 text-neutral-600 font-thin'
+                  }`}
+                >
+                  <div className="flex items-baseline gap-6 sm:gap-10">
+                    <span className="font-mono text-xs sm:text-sm tracking-widest text-neutral-500">
+                      {venture.id}
+                    </span>
+                    <h3 className="text-4xl sm:text-6xl md:text-7xl uppercase tracking-tight">
+                      {venture.name}
+                    </h3>
+                  </div>
+
+                  <div 
+                    className={`flex items-center gap-6 pl-10 sm:pl-16 mt-2 transition-all duration-300 ${
+                      isCurrent ? 'opacity-100 max-h-12' : 'opacity-0 max-h-0 overflow-hidden'
+                    }`}
+                  >
+                    <span className="text-xs font-extralight tracking-[0.2em] text-neutral-300 uppercase">
+                      {venture.role}
+                    </span>
+                    <span className="text-[10px] font-mono tracking-widest text-neutral-600">
+                      // {venture.period}
+                    </span>
+                    <span className="text-[9px] px-2 py-0.5 border border-neutral-800 text-neutral-300 tracking-widest uppercase bg-neutral-950">
+                      {venture.status}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Top & Bottom Depth Vignettes */}
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#050505] to-transparent pointer-events-none z-20" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none z-20" />
+        </div>
+
+        {/* Footer info & clickable index dots */}
+        <div className="max-w-6xl mx-auto w-full flex justify-between items-center pt-6 border-t border-neutral-900/80 text-[9px] font-mono tracking-[0.3em] uppercase text-neutral-600">
+          <span>SCROLL WHEEL OR CLICK TO STEP</span>
+          <div className="flex gap-2 items-center">
+            {ventures.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveVentureIndex(i)}
+                className={`h-1.5 transition-all duration-300 rounded-full ${
+                  i === activeVentureIndex ? 'w-8 bg-white' : 'w-2 bg-neutral-800 hover:bg-neutral-600'
+                }`}
+              />
+            ))}
+          </div>
+          <span>SPRING KINEMATICS // 60 FPS</span>
+        </div>
+      </section>
 
       {/* ──────────────────────────────────────────────
           SECTION 4: CURATED GALLERY / VISUAL WORKS
@@ -292,23 +423,15 @@ export default function FounderPortfolio() {
         </div>
       </section>
 
-
       {/* ──────────────────────────────────────────────
           SECTION 5: MILESTONES & LEADERSHIP INDEX
       ────────────────────────────────────────────── */}
- {/* ──────────────────────────────────────────────
-          SECTION 5: MILESTONES & LEADERSHIP INDEX (IMPACT REDESIGN)
-      ────────────────────────────────────────────── */}
       <section id="index" className="relative py-44 px-8 sm:px-16 border-t border-neutral-900/80 bg-[#050505] overflow-hidden">
-        
-        {/* Subtle Architectural Watermark */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 text-[18vw] font-thin text-white/[0.015] pointer-events-none select-none uppercase tracking-tighter leading-none">
           IMPACT
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          
-          {/* Header Row with Status Indicator */}
           <div className="flex flex-col md:flex-row md:items-end justify-between pb-16 border-b border-neutral-900 gap-8">
             <div>
               <div className="flex items-center gap-3 text-[10px] font-extralight tracking-[0.45em] uppercase text-neutral-500 mb-4">
@@ -326,7 +449,6 @@ export default function FounderPortfolio() {
             </div>
           </div>
 
-          {/* Precision 2x2 Architectural Metric Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-neutral-900 border-b border-neutral-900">
             {[
               {
@@ -368,13 +490,11 @@ export default function FounderPortfolio() {
                   idx >= 2 ? 'md:border-t border-neutral-900' : ''
                 }`}
               >
-                {/* Precision Corner Crosshairs (+) */}
                 <span className="absolute top-4 left-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
                 <span className="absolute top-4 right-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
                 <span className="absolute bottom-4 left-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
                 <span className="absolute bottom-4 right-4 text-[9px] font-mono text-neutral-700 group-hover:text-neutral-400 transition-colors">+</span>
 
-                {/* Card Top Indicator */}
                 <div className="flex justify-between items-center text-[10px] font-mono tracking-widest text-neutral-500 mb-10">
                   <span>{metric.id}</span>
                   <span className="uppercase tracking-[0.2em] group-hover:text-neutral-200 transition-colors">
@@ -382,13 +502,11 @@ export default function FounderPortfolio() {
                   </span>
                 </div>
 
-                {/* Hero Numerical Value & Reactive Frequency Sparkline */}
                 <div className="flex items-baseline justify-between gap-6 mb-4">
                   <span className="text-6xl sm:text-7xl md:text-8xl font-thin tracking-tighter uppercase text-neutral-100 group-hover:text-white transition-all duration-300 group-hover:translate-x-1">
                     {metric.val}
                   </span>
 
-                  {/* Audio / Data Frequency Visualizer */}
                   <div className="flex items-end gap-1 h-10 pb-2">
                     {metric.bars.map((bar, barIdx) => (
                       <div
@@ -403,7 +521,6 @@ export default function FounderPortfolio() {
                   </div>
                 </div>
 
-                {/* Metric Title & Deep Subtext */}
                 <h3 className="text-sm font-light tracking-[0.25em] uppercase text-neutral-200 mb-2">
                   {metric.label}
                 </h3>
@@ -411,21 +528,17 @@ export default function FounderPortfolio() {
                   {metric.meta}
                 </p>
 
-                {/* Subtle Hover Radial Spotlight */}
                 <div className="absolute -bottom-24 -right-24 w-60 h-60 bg-white/[0.03] rounded-full blur-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               </div>
             ))}
           </div>
 
-          {/* Bottom Ledger Details */}
           <div className="mt-8 flex flex-col sm:flex-row justify-between items-center text-[9px] font-mono tracking-[0.3em] uppercase text-neutral-600 gap-4">
             <span>SOURCE: INDEPENDENT ENTERPRISE VALUATION & AUDIT RECORDS</span>
             <span>CURRENCY: USD // REAL-TIME METRIC CACHE</span>
           </div>
-
         </div>
       </section>
-
 
       {/* ──────────────────────────────────────────────
           SECTION 6: ESSAYS & THOUGHT LEADERSHIP
@@ -459,7 +572,6 @@ export default function FounderPortfolio() {
         </div>
       </section>
 
-
       {/* ──────────────────────────────────────────────
           SECTION 7: ADVISORY, CONTACT & COLOPHON
       ────────────────────────────────────────────── */}
@@ -484,7 +596,6 @@ export default function FounderPortfolio() {
           </div>
         </div>
 
-        {/* Minimal Colophon Footer */}
         <div className="max-w-6xl mx-auto w-full pt-20 border-t border-neutral-950 flex flex-col sm:flex-row justify-between items-center text-[10px] font-extralight tracking-[0.35em] text-neutral-600 uppercase gap-6">
           <span>© ANEES ARK — ALL RIGHTS RESERVED</span>
           <div className="flex gap-8">
