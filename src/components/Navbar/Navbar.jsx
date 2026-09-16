@@ -13,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur-md border-b border-neutral-200/80 px-4 sm:px-6 py-4 sm:py-5 text-neutral-900 transition-all md:px-[6%]">
+    <nav className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur-md border-b border-neutral-200/80 px-4 sm:px-6 py-3 sm:py-3.5 text-neutral-900 transition-all md:px-[6%]">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between">
         
         {/* Logo / Brand Name */}
