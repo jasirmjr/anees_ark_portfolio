@@ -23,9 +23,9 @@ const Navbar = () => {
             scrollToSection(e, 'root');
             setIsMenuOpen(false);
           }}
-          className="text-xl font-extrabold tracking-tight text-neutral-950 transition-opacity hover:opacity-80 sm:text-2xl"
+          className="text-xl sm:text-2xl font-black italic tracking-tighter uppercase text-neutral-950 transition-opacity hover:opacity-80"
         >
-          Anees Ark<span className="text-[#ff5500]">.</span>
+          <span>ANEES </span><span className="text-[#e5252a]">ARK</span>
         </a>
 
         {/* Desktop Navigation Links */}
@@ -64,7 +64,7 @@ const Navbar = () => {
         <a 
           href="#contact" 
           onClick={(e) => scrollToSection(e, 'contact')}
-          className="group hidden items-center gap-2.5 rounded-full bg-[#ff5500] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-all duration-300 hover:bg-[#e04b00] hover:shadow-[0_4px_16px_rgba(255,85,0,0.3)] md:flex"
+          className="group hidden items-center gap-2.5 rounded-full bg-[#e5252a] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-all duration-300 hover:bg-[#cb1d22] hover:shadow-[0_4px_16px_rgba(229,37,42,0.3)] md:flex"
         >
           <span>Get in touch</span>
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
@@ -129,7 +129,7 @@ const Navbar = () => {
         
         <a 
           href="#contact" 
-          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[#ff5500] py-3 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
+          className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[#e5252a] py-3 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
           onClick={(e) => scrollToSection(e, 'contact')}
         >
           <span>Get in touch</span>
