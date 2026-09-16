@@ -787,52 +787,51 @@ export default function FounderPortfolio() {
         <div className="absolute -bottom-24 -left-24 w-[450px] h-[450px] bg-[#e5252a]/[0.04] rounded-full blur-[120px] pointer-events-none z-0" />
 
 
-        {/* ─── MAIN STAGE: LAYER 1 (NAME IN BACK) + LAYER 2 (BIG MODEL IN FRONT) + LAYER 3 (EDITORIAL RIGHT) ─── */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full flex-1 flex flex-col justify-between lg:justify-center my-auto min-h-[540px] sm:min-h-[640px] lg:min-h-[700px]">
+        {/* ─── DESKTOP STAGE (lg:flex): EXACT LAPTOP VIEW FROM REFERENCE ─── */}
+        <div className="hidden lg:flex relative z-10 max-w-7xl mx-auto w-full flex-1 flex-col justify-center my-auto min-h-[640px] xl:min-h-[700px]">
           
           {/* LAYER 1: GIANT NAME TYPOGRAPHY IN THE BACK (Falling from top behind Model z-10) */}
           <div 
-            key={`hero-name-layer-${heroAnimKey}`}
+            key={`hero-name-layer-desktop-${heroAnimKey}`}
             className="absolute inset-0 flex flex-col justify-center pointer-events-none select-none z-10 overflow-hidden py-4 sm:py-6"
           >
-            {/* Top Row: ANEES (Falling from top, centered on mobile to frame head/shoulders) */}
-            <div className="flex items-baseline justify-center lg:justify-start">
+            {/* Top Row: ANEES */}
+            <div className="flex items-baseline justify-start">
               <span 
                 style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both' }}
-                className="text-[20vw] sm:text-[18vw] lg:text-[13.5rem] xl:text-[16rem] font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans will-change-transform"
+                className="text-[13.5rem] xl:text-[16rem] font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans will-change-transform"
               >
                 ANEES
               </span>
             </div>
 
-            {/* Middle Row: ARK (Falling from top with stagger, centered on mobile behind torso) */}
-            <div className="flex items-baseline justify-center lg:justify-start sm:pl-[3vw] lg:pl-[5rem]">
+            {/* Middle Row: ARK */}
+            <div className="flex items-baseline justify-start pl-[5rem]">
               <span 
                 style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both' }}
-                className="text-[24vw] sm:text-[20vw] lg:text-[13.5rem] xl:text-[16rem] font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans will-change-transform"
+                className="text-[13.5rem] xl:text-[16rem] font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans will-change-transform"
               >
                 ARK
               </span>
             </div>
 
-            {/* Tagline Row: VENTURES (Fades in smoothly after ANEES ARK text animation completes) */}
-            <div className="flex items-center justify-center lg:justify-start pt-2 sm:pt-3 sm:pl-[3vw] lg:pl-[5.5rem]">
+            {/* Tagline Row: VENTURES */}
+            <div className="flex items-center justify-start pt-3 pl-[5.5rem]">
               <div 
                 style={{ animation: 'heroTaglineFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both' }}
-                className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm will-change-transform"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm will-change-transform"
               >
                 <span className="w-2 h-2 rounded-full bg-[#e5252a] animate-pulse" />
-                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.25em] text-neutral-700 font-bold">
+                <span className="text-xs font-mono uppercase tracking-[0.25em] text-neutral-700 font-bold">
                   VENTURES // CREATIVE ARCHITECT
                 </span>
               </div>
             </div>
           </div>
 
-          {/* LAYER 2: MODEL CUTOUT (In Front of All Text z-20 - Grounded & Static, matching laptop view) */}
+          {/* LAYER 2: MODEL CUTOUT (In Front of All Text z-20 - Grounded & Static) */}
           <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 overflow-visible">
-            <div className="relative h-[86%] sm:h-[92%] lg:h-[100%] max-h-[820px] aspect-[1827/3658] pointer-events-auto flex items-end justify-center">
-              {/* Model Image: Steady in front of all falling text with soft bottom gradient fade */}
+            <div className="relative h-full max-h-[820px] aspect-[1827/3658] pointer-events-auto flex items-end justify-center">
               <img
                 src={heroPortrait}
                 alt="Anees Ark"
@@ -845,69 +844,44 @@ export default function FounderPortfolio() {
             </div>
           </div>
 
-          {/* Mobile Bottom Action Row: Sleek & uncluttered so photo & back text stay fully visible */}
-          <div 
-            key={`hero-mobile-actions-${heroAnimKey}`}
-            style={{ animation: 'heroTaglineFadeIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 1.25s both' }}
-            className="lg:hidden relative z-30 w-full pt-2 pb-1 pointer-events-auto flex flex-col items-center gap-2 text-center mt-auto"
-          >
-            <div className="flex items-center justify-center gap-2.5">
-              <a
-                href="#ventures"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('ventures')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e5252a] hover:bg-[#cb1d22] text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm hover:shadow-[0_4px_16px_rgba(229,37,42,0.35)] active:scale-95 cursor-pointer"
-              >
-                <span>Explore Ventures</span>
-                <span className="text-xs group-hover:translate-y-0.5 transition-transform">↓</span>
-              </a>
+          {/* LAYER 3: FOREGROUND EDITORIAL CONTENT ON THE RIGHT (z-30) */}
+          <div className="relative z-30 w-full grid grid-cols-12 gap-6 pointer-events-none items-end">
+            <div className="col-span-7 xl:col-span-8" />
 
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer"
-              >
-                <span>Inquire</span>
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </a>
-            </div>
-          </div>
-
-          {/* LAYER 3: FOREGROUND EDITORIAL CONTENT ON THE RIGHT (Desktop only: lg:grid) */}
-          <div className="hidden lg:grid relative z-30 w-full grid-cols-12 gap-6 pointer-events-none items-end">
-            
-            {/* Left side empty space to let the giant "ANEES ARK" and model shine */}
-            <div className="lg:col-span-7 xl:col-span-8" />
-
-            {/* Right side editorial panel (Slides in with smooth staggered text) */}
+            {/* Right side editorial panel */}
             <div 
               key={`hero-right-card-${heroAnimKey}`}
               style={{ animation: 'heroRightSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}
-              className="lg:col-span-5 xl:col-span-4 flex flex-col justify-end space-y-3.5 pointer-events-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-md border border-neutral-200/90 shadow-[0_15px_35px_rgba(0,0,0,0.06)] will-change-transform"
+              className="col-span-5 xl:col-span-4 flex flex-col justify-end space-y-3.5 pointer-events-auto p-6 rounded-3xl bg-white/90 backdrop-blur-md border border-neutral-200/90 shadow-[0_15px_35px_rgba(0,0,0,0.06)] will-change-transform"
             >
-              
-              {/* Headline */}
+              <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-[#e5252a] uppercase font-bold">
+                <span>DISCIPLINE // DIRECTION</span>
+              </div>
+
               <div>
                 <h2 
                   style={{ animation: 'heroRightSlideIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both' }}
-                  className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tight text-neutral-950 leading-tight"
+                  className="text-2xl xl:text-3xl font-black uppercase tracking-tight text-neutral-950 leading-tight"
                 >
                   Creative Entrepreneur & Venture Architect
                 </h2>
               </div>
 
-              {/* Brief Narrative */}
               <p 
                 style={{ animation: 'heroRightSlideIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both' }}
-                className="text-xs sm:text-sm font-light text-neutral-600 leading-relaxed"
+                className="text-xs xl:text-sm font-light text-neutral-600 leading-relaxed"
               >
                 Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies that shape the modern economy.
               </p>
+
+              {/* Capability Tags */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {["01 Cinematic Media", "02 Digital Tools", "03 Venture Architecture"].map((chip) => (
+                  <span key={chip} className="text-[9px] font-mono px-2.5 py-1 rounded-md bg-neutral-100/80 text-neutral-600 border border-neutral-200/60">
+                    {chip}
+                  </span>
+                ))}
+              </div>
 
               {/* CTAs */}
               <div 
@@ -932,21 +906,136 @@ export default function FounderPortfolio() {
                     e.preventDefault();
                     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#e5252a] hover:bg-[#cb1d22] text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-sm hover:shadow-[0_4px_16px_rgba(229,37,42,0.35)] active:scale-95 cursor-pointer"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer"
                 >
                   <span>Inquire</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </a>
               </div>
+            </div>
+          </div>
+        </div>
 
+        {/* ─── MOBILE & TABLET STAGE (< lg): MAXIMUM PARITY WITH LAPTOP VIEW ─── */}
+        <div className="lg:hidden relative z-10 max-w-lg mx-auto w-full flex-1 flex flex-col justify-center my-auto py-1 gap-1.5 sm:gap-2">
+          
+          {/* TOP VISUAL STAGE: TEXT ON LEFT, MODEL ON RIGHT (Exact composition of laptop view!) */}
+          <div className="relative w-full h-[48vh] min-h-[330px] max-h-[440px] flex items-end overflow-hidden">
+            
+            {/* LAYER 1: NAME ON THE LEFT (Completely visible, not covered by model!) */}
+            <div 
+              key={`hero-mobile-name-${heroAnimKey}`}
+              className="absolute left-1 inset-y-0 flex flex-col justify-center pointer-events-none select-none z-10 py-2"
+            >
+              {/* ANEES */}
+              <div className="flex items-baseline justify-start">
+                <span 
+                  style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both' }}
+                  className="text-[16vw] xs:text-[14vw] sm:text-7xl font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans will-change-transform"
+                >
+                  ANEES
+                </span>
+              </div>
+
+              {/* ARK */}
+              <div className="flex items-baseline justify-start pl-1 sm:pl-3">
+                <span 
+                  style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both' }}
+                  className="text-[17.5vw] xs:text-[15.5vw] sm:text-8xl font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans will-change-transform"
+                >
+                  ARK
+                </span>
+              </div>
+
+              {/* Tagline Pill */}
+              <div className="flex items-center justify-start pt-2 pl-1 sm:pl-3">
+                <div 
+                  style={{ animation: 'heroTaglineFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both' }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm will-change-transform"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a] animate-pulse" />
+                  <span className="text-[8.5px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-700 font-bold">
+                    VENTURES // CREATIVE ARCHITECT
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* LAYER 2: MODEL ON THE RIGHT (Overlaps right side of text in 3D!) */}
+            <div className="absolute right-0 bottom-0 top-0 w-[58%] max-w-[260px] flex items-end justify-end pointer-events-none z-20 overflow-visible">
+              <div className="relative h-full aspect-[1827/3658] pointer-events-auto flex items-end justify-end">
+                <img
+                  src={heroPortrait}
+                  alt="Anees Ark"
+                  style={{
+                    maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)'
+                  }}
+                  className="w-full h-full object-contain object-bottom filter brightness-[1.02] contrast-[1.03]"
+                />
+              </div>
             </div>
 
           </div>
 
+          {/* EDITORIAL CARD ON MOBILE (Directly connected below model image - zero blank space!) */}
+          <div 
+            key={`hero-mobile-card-${heroAnimKey}`}
+            style={{ animation: 'heroRightSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}
+            className="relative z-30 -mt-3 sm:-mt-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-[0_8px_24px_rgba(0,0,0,0.05)] space-y-2.5 pointer-events-auto"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-[#e5252a] uppercase font-bold">
+                DISCIPLINE // DIRECTION
+              </span>
+              <div className="flex gap-1">
+                {["Media", "Tools", "Ventures"].map((t) => (
+                  <span key={t} className="text-[7.5px] font-mono px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-base sm:text-lg font-black uppercase tracking-tight text-neutral-950 leading-snug">
+                Creative Entrepreneur & Venture Architect
+              </h2>
+              <p className="text-[11px] sm:text-xs font-light text-neutral-600 leading-relaxed mt-1">
+                Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies.
+              </p>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex items-center gap-2 pt-0.5">
+              <a
+                href="#ventures"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('ventures')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="flex-1 group relative inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#e5252a] hover:bg-[#cb1d22] text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
+              >
+                <span>Explore Ventures</span>
+                <span className="text-xs">↓</span>
+              </a>
+
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="flex-1 group inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
+              >
+                <span>Inquire</span>
+                <span className="text-xs">→</span>
+              </a>
+            </div>
+          </div>
+
         </div>
 
-        {/* ─── BOTTOM METRICS & TELEMETRY ROW (Matching clean footer bar) ─── */}
-        
 
       </section>
 
