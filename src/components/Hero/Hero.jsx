@@ -387,196 +387,39 @@ export default function FounderPortfolio() {
   ];
 
   // ──────────────────────────────────────────────
-  // SECTION 3: VENTURE INTERACTIVE STATE & CLEAN SCROLL CYCLING
+  // SECTION 3: VENTURE SCROLL-PINNING STATE
+  // Each scroll step reveals the next venture; section 4 only appears after all ventures.
   // ──────────────────────────────────────────────
   const [activeVenture, setActiveVenture] = useState(0);
   const venturesSectionRef = useRef(null);
-  const isCooldownRef = useRef(false);
-  const activeVentureRef = useRef(0);
-  activeVentureRef.current = activeVenture;
+  const venturesWrapperRef = useRef(null); // outer scroll-spacer div
 
-  const wheelAccumulatorRef = useRef(0);
-  const isNavigatingRef = useRef(false);
-
-  const selectVenture = (index) => {
-    setActiveVenture(index);
-    const el = venturesSectionRef.current;
-    if (el) {
-      const navHeight = window.innerWidth < 640 ? 68 : 72;
-      const targetY = window.scrollY + el.getBoundingClientRect().top - navHeight;
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
-    }
-  };
-
-  const handleNext = () => {
-    if (activeVenture < ventures.length - 1) {
-      setActiveVenture((prev) => prev + 1);
-    } else {
-      // Completed all ventures -> smooth scroll to bottom section
-      const nextSection = document.getElementById('philosophy');
-      if (nextSection) {
-        nextSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
-  const handlePrev = () => {
-    if (activeVenture > 0) {
-      setActiveVenture((prev) => prev - 1);
-    } else {
-      // At first venture -> smooth scroll to top section
-      const prevSection = document.getElementById('about');
-      if (prevSection) {
-        prevSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
-  // Keep activeVenture synchronized when browsing other sections
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-      const el = venturesSectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const navHeight = window.innerWidth < 640 ? 68 : 72;
+    const SCROLL_PER_VENTURE = window.innerHeight * 0.85; // px to scroll per venture
 
-      // When above Section 3 (in Section 1 or 2), prime activeVenture to 0
-      if (rect.top > navHeight + 80) {
-        if (activeVentureRef.current !== 0) {
-          setActiveVenture(0);
-        }
+    const handleScroll = () => {
+      const wrapper = venturesWrapperRef.current;
+      if (!wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      // How far the user has scrolled into the wrapper (from its top reaching viewport top)
+      const scrolledIn = -rect.top;
+
+      if (scrolledIn < 0) {
+        // Haven't reached section yet
+        setActiveVenture(0);
+        return;
       }
-      // When below Section 3 (in Section 4, 5, etc.), prime activeVenture to last
-      else if (rect.bottom < -80) {
-        if (activeVentureRef.current !== ventures.length - 1) {
-          setActiveVenture(ventures.length - 1);
-        }
-      }
+
+      const idx = Math.min(
+        Math.floor(scrolledIn / SCROLL_PER_VENTURE),
+        ventures.length - 1
+      );
+      setActiveVenture(idx);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [ventures.length]);
-
-  useEffect(() => {
-    const el = venturesSectionRef.current;
-    if (!el) return;
-
-    const handleWheel = (e) => {
-      // During active programmatic smooth scroll transition between sections, ignore wheel
-      if (isNavigatingRef.current) {
-        return;
-      }
-
-      const rect = el.getBoundingClientRect();
-      const navHeight = window.innerWidth < 640 ? 68 : 72;
-      const targetY = window.scrollY + rect.top - navHeight;
-
-      // ─── STRICT SECTION BOUNDARY GUARD ───
-      // If Section 3 is not docked under the navbar (user is in Section 1, 2, 4, 5, etc.),
-      // NEVER intercept! Let the user access all other sections freely.
-      const isDocked = Math.abs(rect.top - navHeight) <= 35;
-      if (!isDocked) {
-        wheelAccumulatorRef.current = 0;
-        return;
-      }
-
-      const goingDown = e.deltaY > 0;
-      const goingUp = e.deltaY < 0;
-      const currentIdx = activeVentureRef.current;
-
-      // ─── EXIT TO NEXT SECTION WHEN ON LAST VENTURE ───
-      if (goingDown && currentIdx >= ventures.length - 1) {
-        // If cooldown is active (card just finished entering), prevent immediate fly-through
-        if (isCooldownRef.current) {
-          e.preventDefault();
-          return;
-        }
-
-        if (Math.abs(e.deltaY) < 8) return;
-        wheelAccumulatorRef.current += e.deltaY;
-
-        if (wheelAccumulatorRef.current > 20) {
-          wheelAccumulatorRef.current = 0;
-          isNavigatingRef.current = true;
-          isCooldownRef.current = true;
-          setTimeout(() => {
-            isCooldownRef.current = false;
-            isNavigatingRef.current = false;
-          }, 950);
-
-          const nextSec = document.getElementById('philosophy');
-          if (nextSec) {
-            nextSec.scrollIntoView({ behavior: 'smooth' });
-          }
-        }
-        return;
-      }
-
-      // ─── EXIT TO PREVIOUS SECTION WHEN ON FIRST VENTURE ───
-      if (goingUp && currentIdx <= 0) {
-        if (isCooldownRef.current) {
-          e.preventDefault();
-          return;
-        }
-
-        if (Math.abs(e.deltaY) < 8) return;
-        wheelAccumulatorRef.current += e.deltaY;
-
-        if (wheelAccumulatorRef.current < -20) {
-          wheelAccumulatorRef.current = 0;
-          isNavigatingRef.current = true;
-          isCooldownRef.current = true;
-          setTimeout(() => {
-            isCooldownRef.current = false;
-            isNavigatingRef.current = false;
-          }, 950);
-
-          const prevSec = document.getElementById('about');
-          if (prevSec) {
-            prevSec.scrollIntoView({ behavior: 'smooth' });
-          }
-        }
-        return;
-      }
-
-      // ─── CYCLING BETWEEN VENTURES (EACH SCROLL LOADS NEXT VENTURE) ───
-      e.preventDefault();
-
-      // Pin securely under navbar while cycling
-      if (Math.abs(rect.top - navHeight) > 1) {
-        window.scrollTo({ top: targetY, behavior: 'instant' });
-      }
-
-      if (isCooldownRef.current) {
-        return;
-      }
-
-      if (Math.abs(e.deltaY) < 8) return;
-      wheelAccumulatorRef.current += e.deltaY;
-
-      if (wheelAccumulatorRef.current > 20) {
-        // Scroll Down -> Next Venture
-        wheelAccumulatorRef.current = 0;
-        isCooldownRef.current = true;
-        setTimeout(() => {
-          isCooldownRef.current = false;
-        }, 500);
-        setActiveVenture((prev) => Math.min(prev + 1, ventures.length - 1));
-      } else if (wheelAccumulatorRef.current < -20) {
-        // Scroll Up -> Prev Venture
-        wheelAccumulatorRef.current = 0;
-        isCooldownRef.current = true;
-        setTimeout(() => {
-          isCooldownRef.current = false;
-        }, 500);
-        setActiveVenture((prev) => Math.max(prev - 1, 0));
-      }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
   }, [ventures.length]);
 
   return (
@@ -584,6 +427,16 @@ export default function FounderPortfolio() {
 
       {/* Keyframes for Section 1 Marquee & Section 4 Living Motion */}
       <style>{`
+        @keyframes ventureFadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         @keyframes heroNameFall {
           0% {
             opacity: 0;
@@ -854,9 +707,7 @@ export default function FounderPortfolio() {
               style={{ animation: 'heroRightSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}
               className="col-span-5 xl:col-span-4 flex flex-col justify-end space-y-3.5 pointer-events-auto p-6 rounded-3xl bg-white/90 backdrop-blur-md border border-neutral-200/90 shadow-[0_15px_35px_rgba(0,0,0,0.06)] will-change-transform"
             >
-              <div className="flex items-center gap-2 text-[9px] font-mono tracking-widest text-[#e5252a] uppercase font-bold">
-                <span>DISCIPLINE // DIRECTION</span>
-              </div>
+              
 
               <div>
                 <h2 
@@ -874,14 +725,7 @@ export default function FounderPortfolio() {
                 Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies that shape the modern economy.
               </p>
 
-              {/* Capability Tags */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {["01 Cinematic Media", "02 Digital Tools", "03 Venture Architecture"].map((chip) => (
-                  <span key={chip} className="text-[9px] font-mono px-2.5 py-1 rounded-md bg-neutral-100/80 text-neutral-600 border border-neutral-200/60">
-                    {chip}
-                  </span>
-                ))}
-              </div>
+             
 
               {/* CTAs */}
               <div 
@@ -1045,9 +889,13 @@ export default function FounderPortfolio() {
       <section 
         id="about" 
         ref={section2Ref}
-        className="py-8 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 border-t border-neutral-200 bg-white overflow-hidden"
+        className="relative py-8 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 border-t border-neutral-200 bg-white overflow-hidden"
       >
-        <div className="max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
+        {/* Ambient Subtle Architectural Red Lighting */}
+        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] bg-[#e5252a]/[0.035] rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="absolute -bottom-24 -left-24 w-[380px] h-[380px] bg-[#e5252a]/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
+
+        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
           
           {/* Left Column: Video with smooth scroll-down entrance */}
           <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start transition-all duration-1000 ease-out transform ${
@@ -1055,7 +903,10 @@ export default function FounderPortfolio() {
               ? 'opacity-100 translate-y-0 scale-100' 
               : 'opacity-0 translate-y-16 scale-[0.96]'
           }`}>
-            <div className="relative w-full max-w-[340px] sm:max-w-[360px] md:max-w-none aspect-[9/16] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 bg-neutral-950 shadow-md group">
+            <div className="relative w-full max-w-[340px] sm:max-w-[360px] md:max-w-none aspect-[9/16] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 hover:border-[#e5252a]/40 bg-neutral-950 shadow-md group transition-colors duration-300">
+              {/* Subtle top red accent line */}
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#e5252a] to-transparent opacity-85 z-20" />
+
               <video
                 ref={videoRef}
                 src="/anees.mp4"
@@ -1073,7 +924,7 @@ export default function FounderPortfolio() {
               <button
                 type="button"
                 onClick={toggleVideoAudio}
-                className="absolute bottom-2 right-2 sm:bottom-3.5 sm:right-3.5 md:bottom-4 md:right-4 z-20 inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-md border border-white/25 text-white transition-all active:scale-95 cursor-pointer shadow-sm hover:border-white/40"
+                className="absolute bottom-2 right-2 sm:bottom-3.5 sm:right-3.5 md:bottom-4 md:right-4 z-20 inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-md border border-white/25 hover:border-[#e5252a]/70 text-white transition-all active:scale-95 cursor-pointer shadow-sm"
                 title={isVideoMuted ? "Click to unmute sound" : "Click to mute sound"}
                 aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
               >
@@ -1083,7 +934,7 @@ export default function FounderPortfolio() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                   </svg>
                 ) : (
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#e5252a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                   </svg>
                 )}
@@ -1092,23 +943,28 @@ export default function FounderPortfolio() {
           </div>
 
           {/* Right Column: Statement with staggered scroll-down entrance */}
-          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-5 transition-all duration-1000 delay-150 ease-out transform ${
+          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 transition-all duration-1000 delay-150 ease-out transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
               : 'opacity-0 translate-y-16'
           }`}>
-            {/* Kicker & Heading: Highlighting the Founder & Vision */}
+            {/* Kicker Tag: Red Brand Pill */}
             <div>
+              
+
+              {/* Heading: Highlighting the Founder & Vision with Red Accent */}
               <h2 className="text-xs sm:text-2xl md:text-3xl lg:text-5xl font-bold tracking-tight uppercase leading-tight sm:leading-[1.15] text-neutral-950">
-                BUILDING THE FUTURE OF <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">CREATIVE ENTREPRENEURSHIP.</span>
+                BUILDING THE FUTURE OF <span className="font-bold italic text-[#e5252a]">CREATIVE ENTREPRENEURSHIP.</span>
               </h2>
             </div>
 
-            {/* Founder Lead Statement (High Priority to the Founder) */}
+            {/* Founder Lead Statement (High Priority to the Founder with Red Bar & Highlight) */}
             <div className="space-y-1.5 sm:space-y-2.5 md:space-y-3.5 text-neutral-700 leading-relaxed font-light">
-              <p className="text-[10px] sm:text-sm md:text-base lg:text-[17px] font-normal text-neutral-950 leading-snug sm:leading-relaxed border-l-2 border-[#e5252a] pl-2 sm:pl-3.5 md:pl-4">
-                I’m <strong className="font-bold text-neutral-950">Anees Ark</strong>, an entrepreneur driven by curiosity, creativity, technology, and the desire to build things that create real value. My work sits at the intersection of creative media, technology, design, and entrepreneurship, where I explore how ideas can evolve into meaningful experiences, products, and ventures.
-              </p>
+              <div className="p-2 sm:p-3.5 rounded-xl bg-gradient-to-r from-red-500/[0.04] via-red-500/[0.01] to-transparent border-l-[3px] border-[#e5252a]">
+                <p className="text-[10px] sm:text-sm md:text-base lg:text-[17px] font-normal text-neutral-950 leading-snug sm:leading-relaxed">
+                  I’m <strong className="font-bold text-[#e5252a]">Anees Ark</strong>, an entrepreneur driven by curiosity, creativity, technology, and the desire to build things that create real value. My work sits at the intersection of creative media, technology, design, and entrepreneurship, where I explore how ideas can evolve into meaningful experiences, products, and ventures.
+                </p>
+              </div>
               
               <p className="text-[9px] sm:text-xs md:text-sm text-neutral-600 leading-normal sm:leading-relaxed">
                 I don’t see creativity and technology as separate worlds. For me, they are two sides of the same process — imagining something, finding a way to build it, and creating an impact through it. This perspective has shaped the way I approach every project, whether I’m working on a digital product, exploring a creative concept, developing a web experience, or experimenting with a new business idea.
@@ -1118,264 +974,183 @@ export default function FounderPortfolio() {
                 My journey is driven by a constant desire to learn, experiment, and build. I enjoy moving between different disciplines, understanding how they connect, and bringing them together to create something unique. From visual storytelling and creative production to digital products, web technologies, and business strategy, I’m always looking for new ways to expand what I can create.
               </p>
             </div>
-
           </div>
         </div>
       </section>
 
       {/* ──────────────────────────────────────────────
-          SECTION 3: VENTURES & PORTFOLIO (DETAILED MULTI-ROW SHOWCASE)
+          SECTION 3: VENTURES — SCROLL-PINNED SEQUENTIAL SHOWCASE
+          The outer wrapper provides scroll space (height = ventures × 85vh).
+          The inner section is sticky so it stays in view while the user scrolls.
+          Each scroll step reveals the next venture. After all ventures are seen,
+          the wrapper ends and section 4 naturally scrolls into view.
       ────────────────────────────────────────────── */}
-      {/* ──────────────────────────────────────────────
-          SECTION 3: VENTURES & PORTFOLIO (CENTERED STAGE WITH RIGHT-TO-TOP CHOREOGRAPHY)
-      ────────────────────────────────────────────── */}
-      <section 
-        id="ventures" 
-        ref={venturesSectionRef}
-        className="relative bg-[#fafafa] border-t border-neutral-200 scroll-mt-[68px] sm:scroll-mt-[72px] h-[calc(100vh-72px)] max-h-[calc(100vh-72px)] w-full flex flex-col justify-between py-10 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 overflow-hidden select-none"
+
+      {/* Scroll-space wrapper: tall enough for all ventures */}
+      <div
+        id="ventures"
+        ref={venturesWrapperRef}
+        style={{ height: `calc(100vh + ${ventures.length} * 85vh)` }}
+        className="relative"
       >
-        {/* Top Section Header with Interactive Switcher */}
-        <div className="max-w-6xl mx-auto w-full flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200/90 pb-2 mb-1.5 gap-2 shrink-0">
-          <div>
-           
-            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight uppercase text-neutral-950">
-              COMPANIES & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">ENTITIES.</span>
-            </h2>
-          </div>
+        {/* Sticky inner panel */}
+        <section
+          ref={venturesSectionRef}
+          className="sticky top-0 h-screen overflow-hidden bg-[#fafafa] border-t border-neutral-200 flex flex-col"
+        >
+          {/* Ambient glow */}
+          <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
+          <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-neutral-200/40 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
 
-        </div>
+          <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col flex-1 overflow-hidden py-8 sm:py-10 px-5 sm:px-10 md:px-16">
 
-        {/* Card Deck Stage - Perfectly Centered */}
-        <div className="relative max-w-6xl mx-auto w-full flex-1 min-h-0 flex items-center justify-center my-auto">
-          {ventures.map((venture, idx) => {
-            const isCurrent = idx === activeVenture;
-            const isPast = idx < activeVenture;
-
-            return (
-              <div 
-                key={venture.id}
-                style={{
-                  transform: isCurrent 
-                    ? 'translate3d(0, 0, 0) scale(1)' 
-                    : isPast 
-                    ? 'translate3d(calc(-100% - 60px), 0, 0) scale(0.96)' 
-                    : 'translate3d(calc(100% + 60px), 0, 0) scale(0.96)',
-                  opacity: isCurrent ? 1 : 0,
-                  zIndex: isCurrent ? 30 : 10,
-                  pointerEvents: isCurrent ? 'auto' : 'none',
-                  transition: 'transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease'
-                }}
-                className="absolute inset-0 w-full h-full max-h-[420px] sm:max-h-[450px] lg:max-h-[470px] my-auto rounded-3xl border border-neutral-200 bg-white p-3.5 sm:p-4 md:p-5 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.07)] overflow-hidden flex flex-col justify-between"
-              >
-                {/* Top red accent stripe */}
-                <div className="absolute top-0 inset-x-0 h-1 bg-[#e5252a]" />
-
-                {/* Top Meta Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-neutral-100 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider shrink-0">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-md bg-neutral-950 text-white font-semibold text-[8px] sm:text-[9px]">
-                      [{venture.id} / 03]
-                    </span>
-                    <span className="text-neutral-500 font-medium tracking-widest text-[9px] sm:text-[10px]">
-                      {venture.category}
-                    </span>
-                    
-                  </div>
-                  
-                  <div className="flex items-center gap-2.5 text-neutral-400 text-[8px] sm:text-[9px]">
-                    
-                    <span className="hidden sm:inline text-neutral-800 font-medium">{venture.role}</span>
-                  </div>
-                </div>
-
-                {/* Two-Column Deep Showcase Grid - No Internal Scrollbar */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-5 lg:gap-7 pt-2 items-center flex-1 min-h-0 overflow-hidden">
-                  
-                  {/* Left Column: Brand Logo & Link Button Only */}
-                  <div className="lg:col-span-5 flex flex-col justify-between gap-3 sm:gap-4 h-full">
-                    {/* Brand Logo Showcase Box - High Visibility */}
-                    <div className="relative flex-1 min-h-[75px] sm:min-h-[170px] md:min-h-[190px] bg-gradient-to-b from-[#fafafa] to-neutral-50 rounded-2xl border-2 border-neutral-200/90 p-2.5 sm:p-6 flex items-center justify-center overflow-hidden transition-all group-hover:border-neutral-400 group-hover:shadow-xs">
-                      <span className="absolute top-2 left-2.5 text-[8px] font-mono text-neutral-300 select-none">+</span>
-                      <span className="absolute top-2 right-2.5 text-[8px] font-mono text-neutral-300 select-none">+</span>
-                      <span className="absolute bottom-2 left-2.5 text-[8px] font-mono text-neutral-300 select-none">+</span>
-                      <span className="absolute bottom-2 right-2.5 text-[8px] font-mono text-neutral-300 select-none">+</span>
-
-                      <img
-                        src={venture.logo}
-                        alt={venture.name}
-                        className="max-h-14 sm:max-h-24 md:max-h-28 w-auto max-w-[85%] object-contain filter drop-shadow-xs transition-all duration-500 ease-out"
-                      />
-                    </div>
-
-                    {/* Primary Website CTA Button */}
-                    <a
-                      href={venture.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2 py-2 sm:py-3 px-4 rounded-xl bg-neutral-950 hover:bg-[#e5252a] text-white text-[10px] sm:text-[11px] font-mono tracking-widest uppercase transition-all duration-300 shadow-sm hover:shadow-[0_4px_16px_rgba(229,37,42,0.35)] group/btn cursor-pointer shrink-0"
-                      title={`Visit ${venture.name} website in new tab`}
-                    >
-                      <span>VISIT {venture.name} WEBSITE</span>
-                      <span className="text-xs transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5">↗</span>
-                    </a>
-                  </div>
-
-                  {/* Right Column: About the Company Only */}
-                  <div className="lg:col-span-7 flex flex-col justify-center h-full space-y-2 sm:space-y-3.5">
-                    <div>
-                      <div className="flex items-center justify-between gap-3 mb-0.5 sm:mb-1">
-                        <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight text-neutral-950">
-                          {venture.name}
-                        </h3>
-                       
-                      </div>
-                      <p className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-[#e5252a] font-semibold mb-1 sm:mb-2">
-                        {venture.subtitle}
-                      </p>
-                    </div>
-
-                    {/* About Narrative Block */}
-                    <div className="p-2.5 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border border-neutral-200/80 bg-gradient-to-br from-[#fafafa] via-white to-neutral-50/60 shadow-xs">
-                      <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-mono tracking-[0.25em] uppercase text-neutral-400 mb-1 sm:mb-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a]" />
-                        <span>ABOUT THE COMPANY</span>
-                      </div>
-                      <p className="text-[11px] sm:text-[13.5px] md:text-sm font-light text-neutral-700 leading-relaxed">
-                        {venture.description}
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
+            {/* Section Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-4 sm:pb-5 mb-6 sm:mb-8 gap-4 shrink-0">
+              <div>
+                <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight uppercase text-neutral-950">
+                  COMPANIES & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">ENTITIES.</span>
+                </h2>
               </div>
-            );
-          })}
-        </div>
 
-        {/* Ventures Logo Ecosystem Strip ("JUST BELOW THE DETAILS") - High Visibility */}
-        <div className="max-w-6xl mx-auto w-full pt-2 pb-1 shrink-0">
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-4 md:gap-6">
-            {ventures.map((v, vIdx) => {
-              const isActive = vIdx === activeVenture;
-              return (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => selectVenture(vIdx)}
-                  className={`group relative flex flex-col justify-between p-2.5 sm:p-3 md:p-3.5 rounded-2xl border-2 transition-all duration-500 ease-out cursor-pointer text-left overflow-hidden ${
-                    isActive
-                      ? 'bg-white border-[#e5252a] shadow-[0_12px_28px_-4px_rgba(229,37,42,0.22)] -translate-y-1 scale-[1.02]'
-                      : 'bg-white border-neutral-200 hover:border-neutral-300 shadow-xs opacity-90 hover:opacity-100 hover:-translate-y-0.5'
-                  }`}
-                >
-                  {/* Top Animated Red Accent Indicator */}
-                  <div
-                    className={`absolute top-0 inset-x-0 h-1.5 bg-[#e5252a] shadow-[0_2px_8px_rgba(229,37,42,0.4)] transition-transform duration-500 ease-out origin-left ${
-                      isActive ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
-                    }`}
-                  />
+              {/* Progress dots + scroll hint */}
+              <div className="flex flex-col items-end gap-2">
+                {/* Dot indicators */}
+                <div className="inline-flex items-center gap-2">
+                  {ventures.map((v, idx) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setActiveVenture(idx)}
+                      title={v.name}
+                      className="flex items-center gap-1.5 cursor-pointer group"
+                    >
+                      <span
+                        className={`block rounded-full transition-all duration-400 ${
+                          idx === activeVenture
+                            ? 'w-7 h-2.5 bg-neutral-950'
+                            : idx < activeVenture
+                            ? 'w-2.5 h-2.5 bg-neutral-400'
+                            : 'w-2.5 h-2.5 bg-neutral-200 group-hover:bg-neutral-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                {/* Venture counter */}
+                <span className="text-[10px] font-mono text-neutral-400 tracking-widest uppercase">
+                  [{String(activeVenture + 1).padStart(2, '0')} / {String(ventures.length).padStart(2, '0')}] — SCROLL TO NAVIGATE
+                </span>
+              </div>
+            </div>
 
-                  {/* Header: ID & Live Status */}
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className={`text-[9px] sm:text-[10px] font-mono font-bold transition-colors duration-300 ${
-                      isActive ? 'text-[#e5252a]' : 'text-neutral-500'
-                    }`}>
-                      [{v.id}]
-                    </span>
+            {/* Active Venture Card — animated on change */}
+            <div
+              key={activeVenture}
+              className="flex-1 min-h-0 overflow-hidden"
+              style={{ animation: 'ventureFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both' }}
+            >
+              {(() => {
+                const currentVenture = ventures[activeVenture];
+                return (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-stretch h-full">
 
-                    <div className="flex items-center gap-1.5">
-                      {isActive ? (
-                        <>
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e5252a] opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e5252a]" />
+                    {/* ── LEFT: BRAND STAGE ── */}
+                    <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+
+                      {/* Brand Stage Card */}
+                      <div className="relative rounded-3xl border border-neutral-200/90 bg-white p-5 sm:p-7 flex flex-col justify-between shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)] overflow-hidden group flex-1">
+                        <div className="absolute top-0 inset-x-0 h-1 bg-[#e5252a]" />
+                        <span className="absolute top-3 left-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                        <span className="absolute top-3 right-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                        <span className="absolute bottom-3 left-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                        <span className="absolute bottom-3 right-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
+
+                        <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-neutral-100 text-[10px] font-mono tracking-widest uppercase">
+                          <span className="px-2.5 py-1 rounded-md bg-neutral-950 text-white font-semibold text-[9px]">
+                            [{currentVenture.id} // 0{ventures.length}]
                           </span>
-                          <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-[#e5252a] font-bold">
-                            VIEWING
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-[#e5252a] animate-pulse" />
+                            <span className="text-neutral-600 font-medium">{currentVenture.period}</span>
+                          </div>
+                        </div>
+
+                        <div className="w-full h-36 sm:h-44 flex items-center justify-center p-5 my-2 bg-gradient-to-b from-neutral-50 to-[#fafafa] rounded-2xl border border-neutral-200/80 group-hover:border-neutral-300 transition-all">
+                          <img
+                            src={currentVenture.logo}
+                            alt={currentVenture.name}
+                            className="max-h-20 sm:max-h-28 w-auto max-w-[85%] object-contain filter drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+
+                        <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] font-mono text-neutral-500">
+                          <span className="uppercase tracking-wider truncate max-w-[200px]">{currentVenture.category}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-700 text-[9px] font-semibold tracking-widest uppercase">
+                            {currentVenture.badge}
                           </span>
-                        </>
-                      ) : (
-                        <span className="text-[8px] sm:text-[9px] font-mono tracking-wider text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                          VIEW
-                        </span>
-                      )}
+                        </div>
+                      </div>
+
+                      {/* Visit Website Button */}
+                      <a
+                        href={currentVenture.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/btn relative w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-neutral-950 hover:bg-[#e5252a] text-white text-xs font-mono font-semibold tracking-widest uppercase transition-all duration-300 shadow-sm hover:shadow-[0_6px_20px_rgba(229,37,42,0.35)] active:scale-[0.99] cursor-pointer shrink-0"
+                      >
+                        <span>VISIT {currentVenture.name} WEBSITE</span>
+                        <span className="text-sm font-mono transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5">↗</span>
+                      </a>
+                    </div>
+
+                    {/* ── RIGHT: EXECUTIVE DOSSIER ── */}
+                    <div className="lg:col-span-7 flex flex-col justify-between gap-4 rounded-3xl border border-neutral-200/90 bg-white p-5 sm:p-7 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)]">
+
+                      <div>
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                          <h3 className="text-2xl sm:text-4xl font-black tracking-tight text-neutral-950 uppercase">
+                            {currentVenture.name}
+                          </h3>
+                          <span className="px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider">
+                            {currentVenture.role}
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm font-mono text-[#e5252a] font-semibold tracking-wide uppercase">
+                          {currentVenture.subtitle}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-neutral-50/80 border border-neutral-200/80">
+                        <div className="flex items-center gap-2 text-[9px] font-mono tracking-[0.25em] uppercase text-neutral-400 mb-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a]" />
+                          <span>EXECUTIVE SYNOPSIS</span>
+                        </div>
+                        <p className="text-xs sm:text-sm font-light text-neutral-700 leading-relaxed">
+                          {currentVenture.description}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {currentVenture.capabilities.map((cap, capIdx) => (
+                          <div
+                            key={capIdx}
+                            className="p-3.5 rounded-xl border border-neutral-200/80 bg-white hover:border-neutral-300 transition-all flex flex-col justify-between"
+                          >
+                            <span className="text-xs font-bold text-neutral-950 tracking-tight mb-1">{cap.title}</span>
+                            <p className="text-[11px] font-light text-neutral-600 leading-normal">{cap.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+
                     </div>
                   </div>
+                );
+              })()}
+            </div>
 
-                  {/* High-Visibility Centered Animated Logo */}
-                  <div className="h-10 sm:h-12 md:h-13 w-full flex items-center justify-center py-1 overflow-hidden bg-neutral-50/70 rounded-xl border border-neutral-100 group-hover:bg-white transition-colors">
-                    <img
-                      src={v.logo}
-                      alt={`${v.name} logo`}
-                      className={`max-h-8 sm:max-h-10 md:max-h-11 w-auto max-w-[85%] object-contain transition-all duration-500 ease-out filter drop-shadow-xs ${
-                        isActive
-                          ? 'opacity-100 scale-105'
-                          : 'opacity-85 group-hover:opacity-100 scale-95 group-hover:scale-100'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Bottom Meta Row */}
-                  <div className="w-full flex items-baseline justify-between pt-1.5 mt-1 border-t border-neutral-100 text-[8.5px] sm:text-[9.5px] font-mono">
-                    <span className={`font-bold tracking-tight transition-colors duration-300 truncate ${
-                      isActive ? 'text-neutral-950' : 'text-neutral-700'
-                    }`}>
-                      {v.name}
-                    </span>
-                    <span className="text-[7.5px] sm:text-[8.5px] text-neutral-400 font-medium truncate hidden sm:inline">
-                      {v.period}
-                    </span>
-                  </div>
-
-                  {/* Subtle Glow on Active */}
-                  {isActive && (
-                    <div className="absolute -inset-1 bg-gradient-to-tr from-[#e5252a]/10 via-transparent to-transparent rounded-2xl blur-md pointer-events-none -z-0" />
-                  )}
-                </button>
-              );
-            })}
           </div>
-        </div>
-
-        {/* Bottom Bar: Prev/Next & Progress Track */}
-        <div className="max-w-6xl mx-auto w-full flex items-center justify-between pt-2 pb-1 sm:pb-2 border-t border-neutral-200/80 text-[10px] font-mono tracking-widest text-neutral-400 uppercase shrink-0">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="px-3 py-1 rounded-full border border-neutral-300 text-neutral-800 hover:bg-neutral-900 hover:text-white text-[9px] sm:text-[10px] transition-all cursor-pointer"
-            >
-              ← PREV
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-3 py-1 rounded-full border border-neutral-300 text-neutral-800 hover:bg-neutral-900 hover:text-white text-[9px] sm:text-[10px] transition-all cursor-pointer"
-            >
-              {activeVenture === ventures.length - 1 ? 'CONTINUE ↓' : 'NEXT →'}
-            </button>
-          </div>
-
-          {/* Stepper Dots */}
-          <div className="flex items-center gap-2">
-            {ventures.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => selectVenture(i)}
-                aria-label={`Go to venture ${i + 1}`}
-                className={`h-1.5 transition-all duration-700 rounded-full cursor-pointer ${
-                  i === activeVenture ? 'w-8 sm:w-10 bg-[#e5252a]' : 'w-2 bg-neutral-300 hover:bg-neutral-400'
-                }`}
-              />
-            ))}
-          </div>
-
-          <span className="hidden sm:inline text-[9px]">
-           
-          </span>
-        </div>
-
-      </section>
+        </section>
+      </div>
 
 
       {/* ──────────────────────────────────────────────
@@ -1668,7 +1443,7 @@ export default function FounderPortfolio() {
       <footer ref={contactRef} id="contact" className="relative py-10 sm:py-12 md:py-14 lg:py-16 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-[#fafafa] overflow-hidden">
         {/* Ambient Subtle Architectural Lighting */}
         <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
-        <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-[#e5252a]/[0.035] to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
+        <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-neutral-100/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
 
         <div key={contactAnimKey} className="max-w-6xl mx-auto w-full relative z-10">
           
@@ -1683,7 +1458,7 @@ export default function FounderPortfolio() {
                 <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] uppercase text-neutral-950 mb-3 sm:mb-4">
                   LET’S BUILD <br />
                   SOMETHING <br />
-                  <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">
+                  <span className="font-bold italic text-[#e5252a]">
                     MEANINGFUL.
                   </span>
                 </h2>
@@ -1692,7 +1467,6 @@ export default function FounderPortfolio() {
                   Available for strategic venture advisory, high-production creative media, and brand architecture. Direct inquiries are routed directly to Anees Ark.
                 </p>
               </div>
-
 
             </div>
 
@@ -1706,13 +1480,10 @@ export default function FounderPortfolio() {
                 {/* Diagonal Light Sweep Beam upon Arrival */}
                 <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl sm:rounded-3xl">
                   <div 
-                    className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/10 to-transparent blur-md"
+                    className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-neutral-200/40 to-transparent blur-md"
                     style={{ animation: 'contactSheenSweep 2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards' }}
                   />
                 </div>
-
-                {/* Glowing Top Shimmer Beam */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#e5252a] to-transparent" />
 
                 {/* Corner Viewfinder Telemetry Reticles */}
                 <span className="absolute top-3.5 left-4 text-[9px] font-mono text-neutral-300 select-none">+</span>
@@ -1796,7 +1567,7 @@ export default function FounderPortfolio() {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Your Full Name"
-                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-[#e5252a] focus:ring-2 focus:ring-[#e5252a]/15 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
 
@@ -1811,7 +1582,7 @@ export default function FounderPortfolio() {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="name@company.com"
-                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-[#e5252a] focus:ring-2 focus:ring-[#e5252a]/15 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
 
@@ -1828,7 +1599,7 @@ export default function FounderPortfolio() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Outline your venture scope, creative brief, or collaboration parameters..."
-                        className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-[#e5252a] focus:ring-2 focus:ring-[#e5252a]/15 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
+                        className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
                       />
                     </div>
 
@@ -1839,11 +1610,11 @@ export default function FounderPortfolio() {
                       </div>
                     )}
 
-                    {/* Submit Button */}
+                    {/* Submit Button - Vibrant Signature Red Button */}
                     <button
                       type="submit"
                       disabled={formStatus === 'submitting'}
-                      className="w-full group/btn relative flex items-center justify-center gap-2.5 rounded-xl bg-neutral-950 hover:bg-[#e5252a] text-white py-3 text-xs font-mono font-semibold tracking-widest uppercase transition-all duration-300 disabled:opacity-60 shadow-sm hover:shadow-[0_6px_20px_rgba(229,37,42,0.3)] active:scale-[0.99] cursor-pointer overflow-hidden"
+                      className="w-full group/btn relative flex items-center justify-center gap-2.5 rounded-xl bg-[#e5252a] hover:bg-[#cb1d22] text-white py-3 sm:py-3.5 text-xs font-mono font-semibold tracking-widest uppercase transition-all duration-300 disabled:opacity-60 shadow-[0_6px_25px_rgba(229,37,42,0.3)] hover:shadow-[0_8px_32px_rgba(229,37,42,0.45)] active:scale-[0.99] cursor-pointer overflow-hidden"
                     >
                       {formStatus === 'submitting' ? (
                         <>
@@ -1879,107 +1650,81 @@ export default function FounderPortfolio() {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-2.5 sm:pb-3 gap-2 mb-3 sm:mb-4">
               <div>
                 <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight uppercase text-neutral-950">
-                  CONNECT ACROSS <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">PLATFORMS.</span>
+                  CONNECT ACROSS <span className="font-bold italic text-[#e5252a]">PLATFORMS.</span>
                 </h3>
               </div>
             </div>
 
-            {/* 2-Column Grid for Instagram & LinkedIn */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {/* 2-Column Grid for Instagram & LinkedIn - Minimal Luxury Design */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               
-              {/* ─── INSTAGRAM SPOTLIGHT CARD (PURE LUXURY TYPOGRAPHY + LIGHT SWEEP) ─── */}
+              {/* ─── MINIMAL INSTAGRAM ─── */}
               <a
                 href="https://www.instagram.com/anees_ark/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ animation: 'contactRiseLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both' }}
-                className="group relative block p-5 sm:p-6 rounded-2xl border border-neutral-200/90 bg-white hover:border-neutral-400 hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.06)] transition-all duration-500 overflow-hidden cursor-pointer"
+                className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-neutral-200/90 bg-white/90 hover:border-neutral-400 hover:bg-white hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] transition-all duration-300 cursor-pointer overflow-hidden"
               >
-                {/* Diagonal Light Sweep Beam upon Arrival */}
-                <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
-                  <div 
-                    className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/12 to-transparent blur-md"
-                    style={{ animation: 'contactSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards' }}
-                  />
+                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                  {/* Minimal Icon Badge */}
+                  <div className="w-10 h-10 rounded-xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-center text-neutral-700 group-hover:text-black group-hover:border-neutral-300 transition-all duration-300 shrink-0">
+                    <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </div>
+
+                  <div className="min-w-0">
+                    <span className="block text-[9px] sm:text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight">
+                      INSTAGRAM
+                    </span>
+                    <h4 className="text-sm sm:text-base font-medium text-neutral-950 group-hover:text-black transition-colors truncate">
+                      @anees_ark
+                    </h4>
+                  </div>
                 </div>
 
-                {/* Subtle Ambient Radial Glow on Hover */}
-                <div className="absolute -right-12 -top-12 w-36 h-36 bg-gradient-to-br from-[#e5252a]/[0.08] to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                {/* Top Meta Bar */}
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <span className="text-[10px] font-mono tracking-[0.25em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                    INSTAGRAM
+                <div className="flex items-center gap-1.5 sm:gap-2 text-neutral-400 group-hover:text-neutral-950 transition-colors shrink-0 ml-3">
+                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase font-semibold opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-300 hidden sm:inline">
+                    VISIT
                   </span>
-                  <span className="text-xs font-mono text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-1 transition-all duration-300">
-                    →
+                  <span className="text-sm sm:text-base font-mono group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
+                    ↗
                   </span>
-                </div>
-
-                {/* Primary Handle */}
-                <div className="mb-1.5">
-                  <h4 className="text-xl sm:text-2xl font-light tracking-tight text-neutral-950 group-hover:text-black transition-colors">
-                    @anees_ark
-                  </h4>
-                </div>
-
-                {/* Editorial Context */}
-                <p className="text-xs text-neutral-600 font-light leading-relaxed mb-4">
-                  Behind-the-scenes venture building, creative direction, cinematography, and live founder updates.
-                </p>
-
-                {/* Direct Text Prompt */}
-                <div className="flex items-center gap-2 text-xs font-mono font-medium tracking-widest uppercase text-neutral-900 group-hover:text-[#e5252a] transition-colors">
-                  <span>EXPLORE ARCHIVE</span>
-                  <span className="group-hover:translate-x-1.5 transition-transform duration-300">→</span>
                 </div>
               </a>
 
-              {/* ─── LINKEDIN SPOTLIGHT CARD (PURE LUXURY TYPOGRAPHY + LIGHT SWEEP) ─── */}
+              {/* ─── MINIMAL LINKEDIN ─── */}
               <a
                 href="https://www.linkedin.com/in/anees-ark-bb77a1265/"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ animation: 'contactRiseLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both' }}
-                className="group relative block p-5 sm:p-6 rounded-2xl border border-neutral-200/90 bg-white hover:border-neutral-400 hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.06)] transition-all duration-500 overflow-hidden cursor-pointer"
+                className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-neutral-200/90 bg-white/90 hover:border-neutral-400 hover:bg-white hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] transition-all duration-300 cursor-pointer overflow-hidden"
               >
-                {/* Diagonal Light Sweep Beam upon Arrival */}
-                <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
-                  <div 
-                    className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/12 to-transparent blur-md"
-                    style={{ animation: 'contactSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards' }}
-                  />
+                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                  {/* Minimal Icon Badge */}
+                  <div className="w-10 h-10 rounded-xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-center text-neutral-700 group-hover:text-black group-hover:border-neutral-300 transition-all duration-300 shrink-0">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                  </div>
+
+                  <div className="min-w-0">
+                    <span className="block text-[9px] sm:text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight">
+                      LINKEDIN
+                    </span>
+                    <h4 className="text-sm sm:text-base font-medium text-neutral-950 group-hover:text-black transition-colors truncate">
+                      Anees Ark
+                    </h4>
+                  </div>
                 </div>
 
-                {/* Subtle Ambient Radial Glow on Hover */}
-                <div className="absolute -right-12 -top-12 w-36 h-36 bg-gradient-to-br from-[#e5252a]/[0.08] to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                {/* Top Meta Bar */}
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <span className="text-[10px] font-mono tracking-[0.25em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors">
-                    LINKEDIN
+                <div className="flex items-center gap-1.5 sm:gap-2 text-neutral-400 group-hover:text-neutral-950 transition-colors shrink-0 ml-3">
+                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase font-semibold opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-300 hidden sm:inline">
+                    CONNECT
                   </span>
-                  <span className="text-xs font-mono text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-1 transition-all duration-300">
-                    →
+                  <span className="text-sm sm:text-base font-mono group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
+                    ↗
                   </span>
-                </div>
-
-                {/* Primary Profile Name */}
-                <div className="mb-1.5">
-                  <h4 className="text-xl sm:text-2xl font-light tracking-tight text-neutral-950 group-hover:text-black transition-colors">
-                    Anees Ark
-                  </h4>
-                </div>
-
-                {/* Editorial Context */}
-                <p className="text-xs text-neutral-600 font-light leading-relaxed mb-4">
-                  Strategic venture advisory, executive board affiliations, founder partnerships, and investment syndication.
-                </p>
-
-                {/* Direct Text Prompt */}
-                <div className="flex items-center gap-2 text-xs font-mono font-medium tracking-widest uppercase text-neutral-900 group-hover:text-[#e5252a] transition-colors">
-                  <span>EXPAND NETWORK</span>
-                  <span className="group-hover:translate-x-1.5 transition-transform duration-300">→</span>
                 </div>
               </a>
 
@@ -1998,7 +1743,7 @@ export default function FounderPortfolio() {
             className="hover:text-neutral-950 flex items-center gap-2 transition-colors cursor-pointer group"
           >
             <span>BACK TO TOP</span>
-            <span className="text-neutral-400 group-hover:text-[#e5252a] group-hover:-translate-y-0.5 transition-transform">↑</span>
+            <span className="text-neutral-400 group-hover:text-neutral-950 group-hover:-translate-y-0.5 transition-transform">↑</span>
           </button>
         </div>
 
