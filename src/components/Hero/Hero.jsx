@@ -115,6 +115,32 @@ export default function FounderPortfolio() {
   }, []);
 
   // ──────────────────────────────────────────────
+  // SECTION 3: VENTURES ENTRANCE ANIMATION OBSERVER
+  // Re-triggers every time user scrolls into Section 3
+  // ──────────────────────────────────────────────
+  const venturesRef = useRef(null);
+  const [venturesAnimKey, setVenturesAnimKey] = useState(0);
+  const [isVenturesVisible, setIsVenturesVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVenturesVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setVenturesAnimKey((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.08 }
+    );
+
+    if (venturesRef.current) {
+      observer.observe(venturesRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // ──────────────────────────────────────────────
   // SECTION 4: VISION & MISSION INTERACTIVE 3D MOTION & SPOTLIGHT
   // ──────────────────────────────────────────────
   const section4Ref = useRef(null);
@@ -274,153 +300,59 @@ export default function FounderPortfolio() {
       id: "01", 
       name: "LYF ADS", 
       role: "Founder & Creative Director",
-      subtitle: "Creative Advertising, Brand Architecture & Digital Media Studio",
-      category: "Creative Advertising & Brand Studio",
+      subtitle: "Creative Advertising Studio",
+      category: "Creative Advertising Studio",
       period: "2018 — Present",
       status: "Active", 
       badge: "SCALING GLOBALLY",
       logo: "/LYFADS_Identity__1.png",
+      image: "/ventures/lyfads.jpg",
       url: "https://lyfads.com",
-      description: "Founded in 2018, LYF ADS is a premier visual design and creative advertising agency built to transform bold ideas into distinctive market leaders. Operating at the confluence of design architecture, strategic brand storytelling, and high-conversion commercial media, the agency crafts comprehensive brand identities, omnichannel marketing campaigns, and bespoke visual assets that resonate across competitive global markets.",
-      highlights: [
-        { label: "Established", value: "2018" },
-        { label: "Client Impact", value: "150+ Brands" },
-        { label: "Reach", value: "Multi-Market" },
-        { label: "Specialty", value: "Full-Stack Creative" }
-      ],
-      capabilities: [
-        {
-          title: "Brand Architecture & Identity",
-          detail: "End-to-end design systems, logotypes, typography guidelines, packaging, and comprehensive visual language standards."
-        },
-        {
-          title: "Campaign Direction & Strategy",
-          detail: "Omnichannel launch campaigns, creative copywriting, commercial concepting, and high-impact consumer engagement."
-        },
-        {
-          title: "Visual Media & Motion Graphics",
-          detail: "3D product rendering, brand animations, broadcast graphics, and cinematic promotional content production."
-        },
-        {
-          title: "Performance & Growth Creative",
-          detail: "High-converting digital ad creatives, performance media assets, and data-informed visual storytelling."
-        }
-      ],
-      tags: ["Brand Architecture", "Campaign Direction", "Visual Media", "Omnichannel Creative", "Packaging Design", "Motion Systems"]
+      description: "Founded in 2018, LYF ADS is a premier visual design and creative advertising agency built to transform bold ideas into distinctive market leaders through brand architecture, visual media, and commercial campaigns.",
+      shortDescription: "Premier creative advertising and brand architecture agency crafting comprehensive visual identities, omnichannel campaigns, and commercial media.",
+      stat1: { label: "ESTABLISHED", value: "2018" },
+      stat2: { label: "CLIENT IMPACT", value: "150+ Brands" },
+      tags: ["Brand Architecture", "Campaign Direction", "Visual Media", "Omnichannel"]
     },
     { 
       id: "02", 
       name: "SEKRICK", 
       role: "Founder & Executive Director",
-      subtitle: "Cinematic Storytelling, Film Production & Commercial Studio",
-      category: "Film & Commercial Production House",
+      subtitle: "Film Production & Commercial Studio",
+      category: "Film Production House",
       period: "2026 — Present",
       status: "Active", 
       badge: "NEW VENTURE",
       logo: "/black logo.png",
+      image: "/ventures/sekrick.jpg",
       url: "https://sekrick.com",
-      description: "SEKRICK is an avant-garde creative production house and film direction studio dedicated to cinematic excellence and visual narrative depth. Engineered to push the boundaries of modern media, SEKRICK conceptualizes, directs, and produces high-caliber broadcast commercials, narrative brand films, digital docuseries, and visual campaigns that elevate brands into cultural touchstones.",
-      highlights: [
-        { label: "Founded", value: "2026" },
-        { label: "Format", value: "Cinema 4K/8K" },
-        { label: "Discipline", value: "Film Direction" },
-        { label: "Production", value: "End-to-End" }
-      ],
-      capabilities: [
-        {
-          title: "Commercial & Brand Films",
-          detail: "Flagship television commercials, digital manifestos, cinematic product showcases, and high-production brand films."
-        },
-        {
-          title: "Cinematography & Directing",
-          detail: "Holistic film direction, technical cinematography, specialized anamorphic optics, lighting choreography, and set direction."
-        },
-        {
-          title: "Post-Production & VFX",
-          detail: "Precision film editing, Hollywood-grade color grading (DaVinci/ACES), immersive sound design, and custom visual effects."
-        },
-        {
-          title: "Creative Storyboarding & Concept",
-          detail: "Script writing, narrative development, visual treatments, and director's pitch books crafted from first principles."
-        }
-      ],
-      tags: ["Commercial Production", "Cinematic Direction", "Film Production", "Post-Production & VFX", "Color Grading", "Content Strategy"]
+      description: "SEKRICK is an avant-garde creative production house and film direction studio dedicated to cinematic excellence, commercial brand films, and narrative depth.",
+      shortDescription: "Avant-garde creative production house conceptualizing and directing broadcast commercials, cinema brand films, and visual campaigns.",
+      stat1: { label: "DISCIPLINE", value: "Film Direction" },
+      stat2: { label: "FORMAT", value: "Cinema 4K/8K" },
+      tags: ["Commercial Production", "Cinematic Direction", "Film Production", "Post-VFX"]
     },
     { 
       id: "03", 
       name: "CREATER'S LAB", 
       role: "Founder & Product Architect",
-      subtitle: "Tangible Human-Computer Interfaces, Experimental Hardware & Creator Tools",
-      category: "Hardware Incubator & Tooling Lab",
+      subtitle: "Hardware & Tooling Lab",
+      category: "Hardware Incubator",
       period: "2026 — Present",
       status: "Active", 
       badge: "IN CUBATION",
       logo: "/Logo-Creators-Lab.png",
+      image: "/ventures/createrslab.jpg",
       url: "https://createrslab.com",
-      description: "CREATER'S LAB is a next-generation experimental innovation lab and specialty hardware incubator focused on tangible user interfaces and physical creative instruments. Bridging the divide between tactile hardware and digital software workflows, the lab designs and prototypes dedicated creator devices, ergonomic input surfaces, and tactile controllers that give makers intimate physical agency over their digital craft.",
-      highlights: [
-        { label: "Founded", value: "2026" },
-        { label: "Domain", value: "Tangible UI / HW" },
-        { label: "Focus", value: "Creator Workflows" },
-        { label: "R&D", value: "Rapid Prototyping" }
-      ],
-      capabilities: [
-        {
-          title: "Tangible Human-Computer Interfaces",
-          detail: "Physical knobs, weighted rotary encoders, mechanical sliders, and tactile input surfaces designed for workflow speed."
-        },
-        {
-          title: "Hardware Prototyping & CAD",
-          detail: "Industrial enclosure design, CNC aluminum fabrication, 3D printing rapid prototyping, and ergonomics testing."
-        },
-        {
-          title: "Firmware & Embedded Systems",
-          detail: "Custom ultra-low latency firmware, high-precision microcontroller programming, and USB HID/MIDI protocol integration."
-        },
-        {
-          title: "Creator Instruments & Tooling",
-          detail: "Specialized modular decks, dedicated video/audio control surfaces, and companion desktop software ecosystems."
-        }
-      ],
-      tags: ["Experimental Hardware", "Tangible Interfaces", "Industrial CAD", "Firmware Architecture", "Product Prototyping", "Creator Tools"]
+      description: "CREATER'S LAB is a next-generation experimental innovation lab and specialty hardware incubator focused on tangible user interfaces and physical creative instruments.",
+      shortDescription: "Experimental hardware innovation lab and incubator prototyping tangible user interfaces, tactile controllers, and dedicated creator instruments.",
+      stat1: { label: "DOMAIN", value: "Tangible UI" },
+      stat2: { label: "FOCUS", value: "Creator Tools" },
+      tags: ["Experimental Hardware", "Tangible Interfaces", "Industrial CAD", "Prototyping"]
     }
   ];
 
-  // ──────────────────────────────────────────────
-  // SECTION 3: VENTURE SCROLL-PINNING STATE
-  // Each scroll step reveals the next venture; section 4 only appears after all ventures.
-  // ──────────────────────────────────────────────
-  const [activeVenture, setActiveVenture] = useState(0);
-  const venturesSectionRef = useRef(null);
-  const venturesWrapperRef = useRef(null); // outer scroll-spacer div
 
-  useEffect(() => {
-    const SCROLL_PER_VENTURE = window.innerHeight * 0.85; // px to scroll per venture
-
-    const handleScroll = () => {
-      const wrapper = venturesWrapperRef.current;
-      if (!wrapper) return;
-
-      const rect = wrapper.getBoundingClientRect();
-      // How far the user has scrolled into the wrapper (from its top reaching viewport top)
-      const scrolledIn = -rect.top;
-
-      if (scrolledIn < 0) {
-        // Haven't reached section yet
-        setActiveVenture(0);
-        return;
-      }
-
-      const idx = Math.min(
-        Math.floor(scrolledIn / SCROLL_PER_VENTURE),
-        ventures.length - 1
-      );
-      setActiveVenture(idx);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [ventures.length]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#0a0a0a] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-neutral-900 selection:text-white antialiased overflow-x-clip">
@@ -619,6 +551,125 @@ export default function FounderPortfolio() {
             transform: translate3d(70%, 65%, 0);
           }
         }
+
+        /* ─── SECTION 3: VENTURE CARDS REVEAL ANIMATIONS (CENTER EMERGE + FLANK SLIDE OUT) ─── */
+        @keyframes centerCardEmerge {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, 45px, 0) scale(0.90);
+          }
+          60% {
+            opacity: 1;
+            transform: translate3d(0, -6px, 0) scale(1.02);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
+        @keyframes leftCardSlideDesktop {
+          0% {
+            opacity: 0;
+            transform: translate3d(calc(100% + 2rem), 0, 0) scale(0.88);
+          }
+          25% {
+            opacity: 0.85;
+          }
+          80% {
+            transform: translate3d(-8px, 0, 0) scale(1.015);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
+        @keyframes rightCardSlideDesktop {
+          0% {
+            opacity: 0;
+            transform: translate3d(calc(-100% - 2rem), 0, 0) scale(0.88);
+          }
+          25% {
+            opacity: 0.85;
+          }
+          80% {
+            transform: translate3d(8px, 0, 0) scale(1.015);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
+        @keyframes leftCardSlideMobile {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, calc(100% + 1.5rem), 0) scale(0.9);
+          }
+          35% {
+            opacity: 0.85;
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
+        @keyframes rightCardSlideMobile {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, calc(-100% - 1.5rem), 0) scale(0.9);
+          }
+          35% {
+            opacity: 0.85;
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
+
+        @media (min-width: 768px) {
+          .venture-anim-center {
+            animation: centerCardEmerge 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+            position: relative;
+            z-index: 30;
+            will-change: transform, opacity;
+          }
+          .venture-anim-left {
+            animation: leftCardSlideDesktop 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            position: relative;
+            z-index: 10;
+            will-change: transform, opacity;
+          }
+          .venture-anim-right {
+            animation: rightCardSlideDesktop 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            position: relative;
+            z-index: 10;
+            will-change: transform, opacity;
+          }
+        }
+        @media (max-width: 767px) {
+          .venture-anim-center {
+            animation: centerCardEmerge 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+            position: relative;
+            z-index: 30;
+            will-change: transform, opacity;
+          }
+          .venture-anim-left {
+            animation: leftCardSlideMobile 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            position: relative;
+            z-index: 10;
+            will-change: transform, opacity;
+          }
+          .venture-anim-right {
+            animation: rightCardSlideMobile 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            position: relative;
+            z-index: 10;
+            will-change: transform, opacity;
+          }
+        }
+
+        
+
+        
       `}</style>
 
       {/* ──────────────────────────────────────────────
@@ -979,178 +1030,106 @@ export default function FounderPortfolio() {
       </section>
 
       {/* ──────────────────────────────────────────────
-          SECTION 3: VENTURES — SCROLL-PINNED SEQUENTIAL SHOWCASE
-          The outer wrapper provides scroll space (height = ventures × 85vh).
-          The inner section is sticky so it stays in view while the user scrolls.
-          Each scroll step reveals the next venture. After all ventures are seen,
-          the wrapper ends and section 4 naturally scrolls into view.
+          SECTION 3: COMPANIES & ENTITIES — REFERENCE CARD STYLE WITH CENTER EMERGENCE
       ────────────────────────────────────────────── */}
-
-      {/* Scroll-space wrapper: tall enough for all ventures */}
-      <div
+      <section
         id="ventures"
-        ref={venturesWrapperRef}
-        style={{ height: `calc(100vh + ${ventures.length} * 85vh)` }}
-        className="relative"
+        ref={venturesRef}
+        className="relative bg-[#fafafa] border-t border-neutral-200 py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-12 lg:px-16 overflow-hidden"
       >
-        {/* Sticky inner panel */}
-        <section
-          ref={venturesSectionRef}
-          className="sticky top-0 h-screen overflow-hidden bg-[#fafafa] border-t border-neutral-200 flex flex-col"
-        >
-          {/* Ambient glow */}
-          <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
-          <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-neutral-200/40 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
+        {/* Subtle Ambient Lighting */}
+        <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
+        <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-[#e5252a]/[0.03] rounded-full blur-[120px] pointer-events-none z-0" />
 
-          <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col flex-1 overflow-hidden py-8 sm:py-10 px-5 sm:px-10 md:px-16">
-
-            {/* Section Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-4 sm:pb-5 mb-6 sm:mb-8 gap-4 shrink-0">
-              <div>
-                <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight uppercase text-neutral-950">
-                  COMPANIES & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">ENTITIES.</span>
-                </h2>
-              </div>
-
-              {/* Progress dots + scroll hint */}
-              <div className="flex flex-col items-end gap-2">
-                {/* Dot indicators */}
-                <div className="inline-flex items-center gap-2">
-                  {ventures.map((v, idx) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => setActiveVenture(idx)}
-                      title={v.name}
-                      className="flex items-center gap-1.5 cursor-pointer group"
-                    >
-                      <span
-                        className={`block rounded-full transition-all duration-400 ${
-                          idx === activeVenture
-                            ? 'w-7 h-2.5 bg-neutral-950'
-                            : idx < activeVenture
-                            ? 'w-2.5 h-2.5 bg-neutral-400'
-                            : 'w-2.5 h-2.5 bg-neutral-200 group-hover:bg-neutral-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                {/* Venture counter */}
-                <span className="text-[10px] font-mono text-neutral-400 tracking-widest uppercase">
-                  [{String(activeVenture + 1).padStart(2, '0')} / {String(ventures.length).padStart(2, '0')}] — SCROLL TO NAVIGATE
-                </span>
-              </div>
+        <div className="max-w-6xl mx-auto w-full relative z-10">
+          
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-5 mb-8 sm:mb-12 gap-4">
+            <div>
+              
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight uppercase text-neutral-950">
+                COMPANIES & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-[#e5252a]">ENTITIES.</span>
+              </h2>
             </div>
+            
+          </div>
 
-            {/* Active Venture Card — animated on change */}
-            <div
-              key={activeVenture}
-              className="flex-1 min-h-0 overflow-hidden"
-              style={{ animation: 'ventureFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both' }}
-            >
-              {(() => {
-                const currentVenture = ventures[activeVenture];
-                return (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-stretch h-full">
+          {/* 3-Card Responsive Grid with Re-triggering Keyframe Choreography */}
+          <div 
+            key={`ventures-grid-${venturesAnimKey}`} 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8 items-stretch"
+          >
+            {ventures.map((venture, idx) => {
+              const animClass = isVenturesVisible
+                ? (idx === 1 ? 'venture-anim-center' : idx === 0 ? 'venture-anim-left' : 'venture-anim-right')
+                : 'opacity-0';
 
-                    {/* ── LEFT: BRAND STAGE ── */}
-                    <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+              return (
+                <div
+                  key={venture.id}
+                  className={`group relative rounded-[32px] sm:rounded-[36px] border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-[0_15px_40px_-12px_rgba(0,0,0,0.07)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-400 flex flex-col justify-between overflow-hidden ${animClass}`}
+                >
+                  <div>
+                    {/* Top Brand Logo Showcase Box (Replaces photo background) */}
+                    <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] rounded-[24px] bg-gradient-to-b from-[#f9f9fb] via-[#f4f4f6] to-[#ededf0] border border-neutral-200/70 mb-4 flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:border-neutral-300 group-hover:from-white group-hover:to-[#f5f5f7] transition-all duration-300 shadow-2xs">
+                      {/* Subtle dot-grid architectural texture */}
+                      <div className="absolute inset-0 bg-[radial-gradient(#d4d4d8_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
-                      {/* Brand Stage Card */}
-                      <div className="relative rounded-3xl border border-neutral-200/90 bg-white p-5 sm:p-7 flex flex-col justify-between shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)] overflow-hidden group flex-1">
-                        <div className="absolute top-0 inset-x-0 h-1 bg-[#e5252a]" />
-                        <span className="absolute top-3 left-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                        <span className="absolute top-3 right-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                        <span className="absolute bottom-3 left-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                        <span className="absolute bottom-3 right-3 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                      
 
-                        <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-neutral-100 text-[10px] font-mono tracking-widest uppercase">
-                          <span className="px-2.5 py-1 rounded-md bg-neutral-950 text-white font-semibold text-[9px]">
-                            [{currentVenture.id} // 0{ventures.length}]
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-[#e5252a] animate-pulse" />
-                            <span className="text-neutral-600 font-medium">{currentVenture.period}</span>
-                          </div>
-                        </div>
-
-                        <div className="w-full h-36 sm:h-44 flex items-center justify-center p-5 my-2 bg-gradient-to-b from-neutral-50 to-[#fafafa] rounded-2xl border border-neutral-200/80 group-hover:border-neutral-300 transition-all">
-                          <img
-                            src={currentVenture.logo}
-                            alt={currentVenture.name}
-                            className="max-h-20 sm:max-h-28 w-auto max-w-[85%] object-contain filter drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
-                          />
-                        </div>
-
-                        <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-[11px] font-mono text-neutral-500">
-                          <span className="uppercase tracking-wider truncate max-w-[200px]">{currentVenture.category}</span>
-                          <span className="px-2 py-0.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-700 text-[9px] font-semibold tracking-widest uppercase">
-                            {currentVenture.badge}
-                          </span>
-                        </div>
+                      {/* Centered Brand Logo */}
+                      <div className="relative z-10 w-full h-full flex items-center justify-center">
+                        <img
+                          src={venture.logo}
+                          alt={venture.name}
+                          className="max-h-16 sm:max-h-20 w-auto max-w-[80%] object-contain filter drop-shadow-xs transition-transform duration-500 group-hover:scale-105"
+                        />
                       </div>
-
-                      {/* Visit Website Button */}
-                      <a
-                        href={currentVenture.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group/btn relative w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl bg-neutral-950 hover:bg-[#e5252a] text-white text-xs font-mono font-semibold tracking-widest uppercase transition-all duration-300 shadow-sm hover:shadow-[0_6px_20px_rgba(229,37,42,0.35)] active:scale-[0.99] cursor-pointer shrink-0"
-                      >
-                        <span>VISIT {currentVenture.name} WEBSITE</span>
-                        <span className="text-sm font-mono transition-transform duration-300 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5">↗</span>
-                      </a>
                     </div>
 
-                    {/* ── RIGHT: EXECUTIVE DOSSIER ── */}
-                    <div className="lg:col-span-7 flex flex-col justify-between gap-4 rounded-3xl border border-neutral-200/90 bg-white p-5 sm:p-7 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)]">
-
+                    {/* Card Typography Content */}
+                    <div className="px-1 space-y-2">
+                      {/* Title and Subtitle */}
                       <div>
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                          <h3 className="text-2xl sm:text-4xl font-black tracking-tight text-neutral-950 uppercase">
-                            {currentVenture.name}
-                          </h3>
-                          <span className="px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider">
-                            {currentVenture.role}
-                          </span>
-                        </div>
-                        <p className="text-xs sm:text-sm font-mono text-[#e5252a] font-semibold tracking-wide uppercase">
-                          {currentVenture.subtitle}
+                        <h3 className="text-xl sm:text-2xl font-black tracking-tight text-[#e5252a] uppercase leading-tight">
+                          {venture.name}
+                        </h3>
+                        <p className="text-xs font-mono font-semibold text-neutral-500 uppercase tracking-wide mt-1">
+                          {venture.subtitle}
                         </p>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-neutral-50/80 border border-neutral-200/80">
-                        <div className="flex items-center gap-2 text-[9px] font-mono tracking-[0.25em] uppercase text-neutral-400 mb-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a]" />
-                          <span>EXECUTIVE SYNOPSIS</span>
-                        </div>
-                        <p className="text-xs sm:text-sm font-light text-neutral-700 leading-relaxed">
-                          {currentVenture.description}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {currentVenture.capabilities.map((cap, capIdx) => (
-                          <div
-                            key={capIdx}
-                            className="p-3.5 rounded-xl border border-neutral-200/80 bg-white hover:border-neutral-300 transition-all flex flex-col justify-between"
-                          >
-                            <span className="text-xs font-bold text-neutral-950 tracking-tight mb-1">{cap.title}</span>
-                            <p className="text-[11px] font-light text-neutral-600 leading-normal">{cap.detail}</p>
-                          </div>
-                        ))}
-                      </div>
-
+                      {/* Concise Narrative Description */}
+                      <p className="text-xs sm:text-[13px] font-light text-neutral-600 leading-relaxed pt-1">
+                        {venture.shortDescription}
+                      </p>
                     </div>
                   </div>
-                );
-              })()}
-            </div>
 
+                  <div className="px-1 pt-4">
+                    
+
+                    {/* Full-Width Bold Pill Button (Matching "Reserve" in Reference) */}
+                    <a
+                      href={venture.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group/btn w-full py-3.5 px-5 rounded-full bg-neutral-950 hover:bg-[#e5252a] text-white text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 shadow-xs hover:shadow-[0_8px_25px_rgba(229,37,42,0.35)] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>Visit Website</span>
+                      <span className="text-sm font-mono transition-transform duration-300 group-hover/btn:translate-x-1">
+                        →
+                      </span>
+                    </a>
+                  </div>
+
+                </div>
+              );
+            })}
           </div>
-        </section>
-      </div>
+
+        </div>
+      </section>
 
 
       {/* ──────────────────────────────────────────────
@@ -1182,7 +1161,7 @@ export default function FounderPortfolio() {
             <div>
               
               <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight uppercase text-neutral-950">
-                VISION & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-transparent">MISSION.</span>
+                VISION & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-[#e5252a]">MISSION.</span>
               </h2>
             </div>
           </div>
@@ -1417,22 +1396,6 @@ export default function FounderPortfolio() {
 
           </div>
 
-          {/* Bottom Philosophical Quote Bar with Staggered Entrance & Interactive Elevation */}
-          <div 
-            className={`group mt-6 sm:mt-8 p-4 sm:p-6 rounded-2xl border border-neutral-200 bg-[#fafafa] hover:bg-white hover:border-neutral-300 hover:shadow-[0_15px_35px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-5 transition-all duration-800 delay-500 ${
-              isSection4Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <div className="flex items-center gap-3 sm:gap-4">
-              <span className="text-2xl sm:text-3xl text-[#e5252a] font-serif leading-none group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">“</span>
-              <p className="text-xs sm:text-sm font-light text-neutral-700 tracking-wide leading-relaxed">
-                Bridging radical creative expression with scalable business infrastructure to make creativity permanent.
-              </p>
-            </div>
-            <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.2em] sm:tracking-[0.25em] text-neutral-400 uppercase shrink-0 group-hover:text-neutral-700 transition-colors">
-              ANEES ARK
-            </span>
-          </div>
 
         </div>
       </section>
