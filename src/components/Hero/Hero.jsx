@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import heroPortrait from '../../assets/anees_portrait.png';
+import heroPortrait from '../../assets/anees_portrait.webp';
 
 function AnimatedCounter({ target, suffix = '', padZero = true, isVisible, duration = 1300 }) {
   const [count, setCount] = useState(0);
@@ -89,7 +89,7 @@ export default function FounderPortfolio() {
       ([entry]) => {
         setIsSection2Visible(entry.isIntersecting);
       },
-      { threshold: 0.12 }
+      { threshold: 0.01, rootMargin: '100px 0px 50px 0px' }
     );
 
     if (section2Ref.current) {
@@ -152,7 +152,7 @@ export default function FounderPortfolio() {
           setVenturesAnimKey((prev) => prev + 1);
         }
       },
-      { threshold: 0.08 }
+      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
     );
 
     if (venturesRef.current) {
@@ -179,7 +179,7 @@ export default function FounderPortfolio() {
           setSection4AnimKey((prev) => prev + 1);
         }
       },
-      { threshold: 0.08 }
+      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
     );
 
     if (section4Ref.current) {
@@ -204,7 +204,7 @@ export default function FounderPortfolio() {
           setContactAnimKey((prev) => prev + 1);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
     );
 
     if (contactRef.current) {
@@ -671,7 +671,7 @@ export default function FounderPortfolio() {
         @keyframes ventureFadeInMobile {
           0% {
             opacity: 0;
-            transform: translate3d(0, 24px, 0) scale(0.96);
+            transform: translate3d(0, 16px, 0) scale(0.97);
           }
           100% {
             opacity: 1;
@@ -680,17 +680,17 @@ export default function FounderPortfolio() {
         }
         @media (max-width: 767px) {
           .venture-anim-center {
-            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.02s both;
             position: relative;
             will-change: transform, opacity;
           }
           .venture-anim-left {
-            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
             position: relative;
             will-change: transform, opacity;
           }
           .venture-anim-right {
-            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
             position: relative;
             will-change: transform, opacity;
           }
@@ -706,17 +706,14 @@ export default function FounderPortfolio() {
             opacity: 0;
             transform: translate3d(0, -110%, 0);
           }
-          15% {
+          20% {
             opacity: 1;
           }
           65% {
-            transform: translate3d(0, 14px, 0);
+            transform: translate3d(0, 10px, 0);
           }
           82% {
-            transform: translate3d(0, -4px, 0);
-          }
-          92% {
-            transform: translate3d(0, 1.5px, 0);
+            transform: translate3d(0, -3px, 0);
           }
           100% {
             opacity: 1;
@@ -725,12 +722,12 @@ export default function FounderPortfolio() {
         }
 
         .vision-card-fall-1 {
-          animation: visionCardFallFromLine 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+          animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.02s both;
           will-change: transform, opacity;
         }
 
         .vision-card-fall-2 {
-          animation: visionCardFallFromLine 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+          animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
           will-change: transform, opacity;
         }
 
@@ -937,31 +934,18 @@ export default function FounderPortfolio() {
 
           </div>
 
-          {/* EDITORIAL CARD ON MOBILE (Directly connected below model image - zero blank space!) */}
+          {/* EDITORIAL CARD ON MOBILE (Exact same content as laptop view) */}
           <div 
             key={`hero-mobile-card-${heroAnimKey}`}
             style={{ animation: 'heroRightSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}
             className="relative z-30 -mt-3 sm:-mt-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-[0_8px_24px_rgba(0,0,0,0.05)] space-y-2.5 pointer-events-auto"
           >
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-[#e5252a] uppercase font-bold">
-                DISCIPLINE // DIRECTION
-              </span>
-              <div className="flex gap-1">
-                {["Media", "Tools", "Ventures"].map((t) => (
-                  <span key={t} className="text-[7.5px] font-mono px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
             <div>
               <h2 className="text-base sm:text-lg font-black uppercase tracking-tight text-neutral-950 leading-snug">
                 Creative Entrepreneur & Venture Architect
               </h2>
               <p className="text-[11px] sm:text-xs font-light text-neutral-600 leading-relaxed mt-1">
-                Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies.
+                Operating at the convergence of creative media, venture architecture, and digital systems. Empowering creative talent and incubating companies that shape the modern economy.
               </p>
             </div>
 
@@ -973,7 +957,7 @@ export default function FounderPortfolio() {
                   e.preventDefault();
                   document.getElementById('ventures')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="flex-1 group relative inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#e5252a] hover:bg-[#cb1d22] text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
+                className="flex-1 group relative inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#e5252a] hover:bg-[#cb1d22] text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
               >
                 <span>Explore Ventures</span>
                 <span className="text-xs">↓</span>
@@ -985,7 +969,7 @@ export default function FounderPortfolio() {
                   e.preventDefault();
                   document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="flex-1 group inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
+                className="flex-1 group inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white text-[11px] font-semibold uppercase tracking-wider transition-all shadow-sm active:scale-95 cursor-pointer text-center"
               >
                 <span>Inquire</span>
                 <span className="text-xs">→</span>
@@ -1013,10 +997,10 @@ export default function FounderPortfolio() {
         <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
           
           {/* Left Column: Video with smooth scroll-down entrance */}
-          <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start transition-all duration-1000 ease-out transform ${
+          <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start transition-all duration-600 ease-out transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0 scale-100' 
-              : 'opacity-0 translate-y-16 scale-[0.96]'
+              : 'opacity-0 translate-y-12 scale-[0.97]'
           }`}>
             <div className="relative w-full max-w-[340px] sm:max-w-[360px] md:max-w-none aspect-[9/16] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 hover:border-[#e5252a]/40 bg-neutral-950 shadow-md group transition-colors duration-300">
               {/* Subtle top red accent line */}
@@ -1029,6 +1013,7 @@ export default function FounderPortfolio() {
                 loop
                 muted={isVideoMuted}
                 playsInline
+                preload="metadata"
                 className="w-full h-full object-cover"
               />
 
@@ -1058,10 +1043,10 @@ export default function FounderPortfolio() {
           </div>
 
           {/* Right Column: Statement with staggered scroll-down entrance */}
-          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 transition-all duration-1000 delay-150 ease-out transform ${
+          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 transition-all duration-600 delay-75 ease-out transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-16'
+              : 'opacity-0 translate-y-12'
           }`}>
             {/* Kicker Tag: Red Brand Pill */}
             <div>
