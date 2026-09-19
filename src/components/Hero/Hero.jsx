@@ -119,8 +119,30 @@ export default function FounderPortfolio() {
   // Re-triggers every time user scrolls into Section 3
   // ──────────────────────────────────────────────
   const venturesRef = useRef(null);
+  const venturesScrollRef = useRef(null);
   const [venturesAnimKey, setVenturesAnimKey] = useState(0);
   const [isVenturesVisible, setIsVenturesVisible] = useState(false);
+  const [activeVentureIdx, setActiveVentureIdx] = useState(0);
+
+  const scrollVentures = (direction) => {
+    if (venturesScrollRef.current) {
+      const scrollAmount = venturesScrollRef.current.clientWidth * 0.85;
+      venturesScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleVenturesScroll = (e) => {
+    const el = e.currentTarget;
+    const scrollLeft = el.scrollLeft;
+    const cardWidth = el.offsetWidth * 0.8;
+    if (cardWidth > 0) {
+      const idx = Math.min(2, Math.max(0, Math.round(scrollLeft / cardWidth)));
+      setActiveVentureIdx(idx);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -157,7 +179,7 @@ export default function FounderPortfolio() {
           setSection4AnimKey((prev) => prev + 1);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.08 }
     );
 
     if (section4Ref.current) {
@@ -646,30 +668,72 @@ export default function FounderPortfolio() {
             will-change: transform, opacity;
           }
         }
+        @keyframes ventureFadeInMobile {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, 24px, 0) scale(0.96);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+          }
+        }
         @media (max-width: 767px) {
           .venture-anim-center {
-            animation: centerCardEmerge 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
             position: relative;
-            z-index: 30;
             will-change: transform, opacity;
           }
           .venture-anim-left {
-            animation: leftCardSlideMobile 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
             position: relative;
-            z-index: 10;
             will-change: transform, opacity;
           }
           .venture-anim-right {
-            animation: rightCardSlideMobile 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+            animation: ventureFadeInMobile 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
             position: relative;
-            z-index: 10;
             will-change: transform, opacity;
           }
         }
 
-        
+        /* ──────────────────────────────────────────────
+           SECTION 4: VISION & MISSION CARDS FALLING DOWN FROM SINGLE LINE
+           Masked at the single line: cards emerge from the line and drop
+           downwards with physical gravity, overshoot, and soft bounce settle.
+        ────────────────────────────────────────────── */
+        @keyframes visionCardFallFromLine {
+          0% {
+            opacity: 0;
+            transform: translate3d(0, -110%, 0);
+          }
+          15% {
+            opacity: 1;
+          }
+          65% {
+            transform: translate3d(0, 14px, 0);
+          }
+          82% {
+            transform: translate3d(0, -4px, 0);
+          }
+          92% {
+            transform: translate3d(0, 1.5px, 0);
+          }
+          100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+          }
+        }
 
-        
+        .vision-card-fall-1 {
+          animation: visionCardFallFromLine 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+          will-change: transform, opacity;
+        }
+
+        .vision-card-fall-2 {
+          animation: visionCardFallFromLine 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+          will-change: transform, opacity;
+        }
+
       `}</style>
 
       {/* ──────────────────────────────────────────────
@@ -680,7 +744,7 @@ export default function FounderPortfolio() {
       ────────────────────────────────────────────── */}
       <section 
         ref={heroRef}
-        className="relative min-h-[calc(100vh-68px)] flex flex-col justify-between py-5 sm:py-6 md:py-8 px-4 sm:px-8 md:px-12 lg:px-16 border-b border-neutral-200 bg-[#fafafa] overflow-hidden select-none"
+        className="relative min-h-0 lg:min-h-[calc(100vh-68px)] flex flex-col justify-between pt-3 sm:pt-6 md:py-8 pb-5 sm:pb-8 lg:py-8 px-4 sm:px-8 md:px-12 lg:px-16 border-b border-neutral-200 bg-[#fafafa] overflow-hidden select-none"
       >
         
         {/* Subtle Architectural Drafting Dot-Grid Background (Matching reference) */}
@@ -812,7 +876,7 @@ export default function FounderPortfolio() {
         </div>
 
         {/* ─── MOBILE & TABLET STAGE (< lg): MAXIMUM PARITY WITH LAPTOP VIEW ─── */}
-        <div className="lg:hidden relative z-10 max-w-lg mx-auto w-full flex-1 flex flex-col justify-center my-auto py-1 gap-1.5 sm:gap-2">
+        <div className="lg:hidden relative z-10 max-w-lg mx-auto w-full flex flex-col py-1 gap-1.5 sm:gap-2">
           
           {/* TOP VISUAL STAGE: TEXT ON LEFT, MODEL ON RIGHT (Exact composition of laptop view!) */}
           <div className="relative w-full h-[48vh] min-h-[330px] max-h-[440px] flex items-end overflow-hidden">
@@ -940,7 +1004,7 @@ export default function FounderPortfolio() {
       <section 
         id="about" 
         ref={section2Ref}
-        className="relative py-8 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 border-t border-neutral-200 bg-white overflow-hidden"
+        className="relative py-6 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 bg-white overflow-hidden"
       >
         {/* Ambient Subtle Architectural Red Lighting */}
         <div className="absolute -top-24 -right-24 w-[420px] h-[420px] bg-[#e5252a]/[0.035] rounded-full blur-[120px] pointer-events-none z-0" />
@@ -1044,20 +1108,45 @@ export default function FounderPortfolio() {
         <div className="max-w-6xl mx-auto w-full relative z-10">
           
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-5 mb-8 sm:mb-12 gap-4">
+          <div className="flex items-end justify-between border-b border-neutral-200 pb-4 sm:pb-5 mb-6 sm:mb-10 md:mb-12 gap-4">
             <div>
-              
               <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight uppercase text-neutral-950">
                 COMPANIES & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-[#e5252a]">ENTITIES.</span>
               </h2>
             </div>
-            
+
+            {/* Mobile Scroll Controls (Arrow buttons + swipe label) */}
+            <div className="flex md:hidden items-center gap-2">
+              <span className="text-[9px] font-mono tracking-widest text-neutral-400 uppercase hidden xs:inline-block">
+                SWIPE
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => scrollVentures('left')}
+                  className="w-8 h-8 rounded-full border border-neutral-300/80 bg-white flex items-center justify-center text-neutral-700 hover:text-black hover:border-neutral-500 active:scale-90 transition-all shadow-2xs"
+                  aria-label="Previous venture"
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollVentures('right')}
+                  className="w-8 h-8 rounded-full border border-neutral-300/80 bg-white flex items-center justify-center text-neutral-700 hover:text-black hover:border-neutral-500 active:scale-90 transition-all shadow-2xs"
+                  aria-label="Next venture"
+                >
+                  →
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* 3-Card Responsive Grid with Re-triggering Keyframe Choreography */}
+          {/* Mobile Horizontal Scroll Row / Desktop 3-Card Responsive Grid */}
           <div 
+            ref={venturesScrollRef}
+            onScroll={handleVenturesScroll}
             key={`ventures-grid-${venturesAnimKey}`} 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8 items-stretch"
+            className="flex flex-row overflow-x-auto snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-4 sm:gap-5 py-2 -mx-4 px-4 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-7 lg:gap-8 md:overflow-visible items-stretch"
           >
             {ventures.map((venture, idx) => {
               const animClass = isVenturesVisible
@@ -1067,15 +1156,13 @@ export default function FounderPortfolio() {
               return (
                 <div
                   key={venture.id}
-                  className={`group relative rounded-[32px] sm:rounded-[36px] border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-[0_15px_40px_-12px_rgba(0,0,0,0.07)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-400 flex flex-col justify-between overflow-hidden ${animClass}`}
+                  className={`group relative rounded-[28px] sm:rounded-[36px] border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-[0_15px_40px_-12px_rgba(0,0,0,0.07)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-400 flex flex-col justify-between overflow-hidden shrink-0 w-[82vw] max-w-[340px] snap-center md:w-auto md:max-w-none md:shrink ${animClass}`}
                 >
                   <div>
                     {/* Top Brand Logo Showcase Box (Replaces photo background) */}
-                    <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] rounded-[24px] bg-gradient-to-b from-[#f9f9fb] via-[#f4f4f6] to-[#ededf0] border border-neutral-200/70 mb-4 flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:border-neutral-300 group-hover:from-white group-hover:to-[#f5f5f7] transition-all duration-300 shadow-2xs">
+                    <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] rounded-[22px] sm:rounded-[24px] bg-gradient-to-b from-[#f9f9fb] via-[#f4f4f6] to-[#ededf0] border border-neutral-200/70 mb-4 flex items-center justify-center p-6 sm:p-8 overflow-hidden group-hover:border-neutral-300 group-hover:from-white group-hover:to-[#f5f5f7] transition-all duration-300 shadow-2xs">
                       {/* Subtle dot-grid architectural texture */}
                       <div className="absolute inset-0 bg-[radial-gradient(#d4d4d8_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
-
-                      
 
                       {/* Centered Brand Logo */}
                       <div className="relative z-10 w-full h-full flex items-center justify-center">
@@ -1107,8 +1194,6 @@ export default function FounderPortfolio() {
                   </div>
 
                   <div className="px-1 pt-4">
-                    
-
                     {/* Full-Width Bold Pill Button (Matching "Reserve" in Reference) */}
                     <a
                       href={venture.url}
@@ -1128,6 +1213,28 @@ export default function FounderPortfolio() {
             })}
           </div>
 
+          {/* Mobile Pagination Indicator Dots */}
+          <div className="flex md:hidden justify-center items-center gap-1.5 pt-4">
+            {ventures.map((v, i) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => {
+                  if (venturesScrollRef.current) {
+                    const card = venturesScrollRef.current.children[i];
+                    if (card) {
+                      card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                  }
+                }}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  activeVentureIdx === i ? 'w-6 bg-[#e5252a]' : 'w-1.5 bg-neutral-300 hover:bg-neutral-400'
+                }`}
+                aria-label={`Scroll to ${v.name}`}
+              />
+            ))}
+          </div>
+
         </div>
       </section>
 
@@ -1138,7 +1245,7 @@ export default function FounderPortfolio() {
       <section 
         id="philosophy" 
         ref={section4Ref}
-        className="relative py-10 sm:py-12 md:py-14 lg:py-16 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-white overflow-hidden"
+        className="relative py-6 sm:py-10 md:py-14 lg:py-16 px-3 sm:px-6 md:px-12 lg:px-16 border-t border-neutral-200 bg-white overflow-hidden"
       >
         {/* Living Kinetic Ambient Mesh Glow Orbs */}
         <div 
@@ -1152,248 +1259,163 @@ export default function FounderPortfolio() {
 
         <div key={section4AnimKey} className="max-w-6xl mx-auto relative z-10">
           
-          {/* Top Header with Staggered Entrance */}
-          <div 
-            className={`flex flex-col md:flex-row md:items-end justify-between pb-4 sm:pb-6 border-b border-neutral-200 gap-4 sm:gap-6 mb-6 sm:mb-8 transition-all duration-700 delay-100 ${
-              isSection4Visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-            }`}
-          >
+          {/* Top Header with Single Line */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between pb-3 sm:pb-5 border-b border-neutral-200 gap-2 sm:gap-6">
             <div>
-              
-              <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight uppercase text-neutral-950">
+              <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight uppercase text-neutral-950">
                 VISION & <span className="font-bold italic bg-gradient-to-r from-neutral-950 via-neutral-700 to-neutral-400 bg-clip-text text-[#e5252a]">MISSION.</span>
               </h2>
             </div>
           </div>
 
-          {/* Cards Grid: Core Vision & Core Mission */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
-            
-            {/* ────────── CARD 1: CORE VISION (SCROLL-TRIGGERED 3D RISE + SHEEN + AUTONOMOUS DRIFT + 3D TILT) ────────── */}
-            <div 
-              onMouseMove={(e) => handleCardMouseMove(e, setCard1Tilt)}
-              onMouseLeave={() => handleCardMouseLeave(setCard1Tilt)}
-              style={{
-                animation: 'cardRiseLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) both',
-                transform: card1Tilt.isHovered 
-                  ? `perspective(1000px) rotateX(${card1Tilt.rotateX}deg) rotateY(${card1Tilt.rotateY}deg) translateZ(14px) translateY(-8px)` 
-                  : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) translateY(0px)',
-                boxShadow: card1Tilt.isHovered 
-                  ? '0 30px 65px -15px rgba(229, 37, 42, 0.14), 0 20px 40px -10px rgba(0, 0, 0, 0.07)' 
-                  : '0 10px 30px -10px rgba(0, 0, 0, 0.03)',
-                transformStyle: 'preserve-3d',
-                transition: card1Tilt.isHovered 
-                  ? 'transform 0.12s ease-out, box-shadow 0.3s ease' 
-                  : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease',
-              }}
-              className="group relative p-5 sm:p-7 lg:p-8 rounded-2xl sm:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 overflow-hidden flex flex-col justify-between cursor-default"
-            >
-              {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
-              <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl sm:rounded-3xl">
-                <div 
-                  className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
-                  style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards' }}
-                />
-              </div>
-
-              {/* Living Autonomous Ambient Drift Spotlight (Active when not hovering) */}
-              <div 
-                className="pointer-events-none absolute -inset-10 blur-3xl transition-opacity duration-700 z-0"
-                style={{
-                  opacity: card1Tilt.isHovered ? 0 : 0.65,
-                  background: 'radial-gradient(circle, rgba(229, 37, 42, 0.08) 0%, transparent 60%)',
-                  animation: 'idleSpotDrift1 14s ease-in-out infinite'
-                }}
-              />
-
-              {/* Dynamic Luminous Mouse Spotlight Sheen (Active on hover) */}
-              <div 
-                className="pointer-events-none absolute inset-0 transition-opacity duration-300 z-10"
-                style={{
-                  opacity: card1Tilt.isHovered ? 1 : 0,
-                  background: `radial-gradient(550px circle at ${card1Tilt.spotX}px ${card1Tilt.spotY}px, rgba(229, 37, 42, 0.09), transparent 65%)`
-                }}
-              />
-
-              {/* Glowing Top Shimmer Beam */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e5252a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
-
-              {/* Floating Counter-Parallax Kinetic Architectural Watermark */}
-              <div 
-                className="absolute -right-4 -bottom-6 text-7xl sm:text-9xl lg:text-[11rem] font-thin text-neutral-950/[0.03] pointer-events-none select-none uppercase tracking-tighter leading-none will-change-transform z-0"
-                style={{
-                  animation: 'floatWatermark1 14s ease-in-out infinite',
-                  transform: card1Tilt.isHovered 
-                    ? `translate3d(${card1Tilt.rotateY * -3.5}px, ${card1Tilt.rotateX * 3.5}px, 0)` 
-                    : undefined,
-                  transition: card1Tilt.isHovered ? 'transform 0.15s ease-out' : 'transform 0.6s ease-out'
-                }}
-              >
-                VISION
-              </div>
-
-              <div className="relative z-10">
-                {/* Header Tag Bar */}
-                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-neutral-400">
-                      FOUNDATIONAL HORIZON
-                    </span>
-                  </div>
-                </div>
-
-                {/* Main Statement with Expanding Neon Underline */}
-                <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-4 sm:mb-6">
-                  To build a{' '}
-                  <span className="relative inline-block font-medium">
-                    creator-first ecosystem
-                    <span 
-                      className="absolute left-0 -bottom-1 h-[2.5px] bg-gradient-to-r from-[#e5252a] via-[#f84347] to-[#e5252a] rounded-full shadow-[0_0_10px_rgba(229,37,42,0.5)]" 
-                      style={{ animation: 'underlineExpand 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both' }}
-                    />
-                  </span>{' '}
-                  where creativity becomes careers, businesses, and lasting opportunities.
-                </h3>
-
-                {/* Sub-Pillars / Cascading Breakdown with Tactile Expansion Beams */}
-                <div className="space-y-2 sm:space-y-2.5 pt-4 sm:pt-5 border-t border-neutral-200/80">
-                  {[
-                    { tag: "CAREERS", desc: "Transforming raw creative talent into sustainable, long-term careers." },
-                    { tag: "BUSINESSES", desc: "Empowering creators to establish scalable, independent businesses." },
-                    { tag: "OPPORTUNITY", desc: "Creating durable networks that unlock continuous, lasting opportunities." }
-                  ].map((pillar, i) => (
+          {/* Falling Cards Viewport — Masked directly at the single line */}
+          <div className="overflow-hidden pt-3 sm:pt-6 lg:pt-8 pb-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:gap-6 lg:gap-8">
+              
+              {/* ────────── CARD 1: CORE VISION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
+              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-1' : 'opacity-0 -translate-y-full'}`}>
+                <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
+                  {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
+                  <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
                     <div 
-                      key={i} 
-                      style={{ animation: `pillarSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.45 + i * 0.14}s both` }}
-                      className="group/item relative flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 p-2.5 sm:p-3.5 rounded-xl hover:bg-neutral-100/80 hover:translate-x-1.5 transition-all duration-300 cursor-default overflow-hidden"
-                    >
-                      {/* Left Accent Neon Beam */}
-                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#e5252a] scale-y-0 group-hover/item:scale-y-100 transition-transform duration-300 origin-center" />
-                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 group-hover/item:text-[#e5252a] transition-colors mt-0.5 min-w-[70px] sm:min-w-[85px]">
-                        [{pillar.tag}]
-                      </span>
-                      <p className="text-xs font-light text-neutral-600 group-hover/item:text-neutral-900 leading-relaxed transition-colors">
-                        {pillar.desc}
-                      </p>
+                      className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
+                      style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards' }}
+                    />
+                  </div>
+
+                  {/* Glowing Top Shimmer Beam */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e5252a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
+
+                  {/* Architectural Static Watermark */}
+                  <div className="absolute -right-2 sm:-right-4 -bottom-3 sm:-bottom-6 text-3xl sm:text-6xl md:text-8xl lg:text-[11rem] font-thin text-neutral-950/[0.03] pointer-events-none select-none uppercase tracking-tighter leading-none z-0">
+                    VISION
+                  </div>
+
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                      {/* Header Tag Bar */}
+                      <div className="flex justify-between items-center mb-1.5 sm:mb-4 lg:mb-6">
+                        <div className="flex items-center gap-1 sm:gap-3">
+                          <span className="text-[7.5px] xs:text-[8.5px] sm:text-[10px] md:text-xs font-mono tracking-wider sm:tracking-[0.25em] uppercase text-neutral-400">
+                            FOUNDATIONAL HORIZON
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Main Statement with Expanding Neon Underline */}
+                      <h3 className="text-[11px] xs:text-xs sm:text-base md:text-xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-2 sm:mb-4 lg:mb-6">
+                        To build a{' '}
+                        <span className="relative inline-block font-medium">
+                          creator-first ecosystem
+                          <span 
+                            className="absolute left-0 -bottom-0.5 sm:-bottom-1 h-[1.5px] sm:h-[2.5px] bg-gradient-to-r from-[#e5252a] via-[#f84347] to-[#e5252a] rounded-full shadow-[0_0_10px_rgba(229,37,42,0.5)]" 
+                            style={{ animation: 'underlineExpand 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both' }}
+                          />
+                        </span>{' '}
+                        where creativity becomes careers, businesses, and lasting opportunities.
+                      </h3>
                     </div>
-                  ))}
+
+                    {/* Sub-Pillars / Cascading Breakdown with Tactile Expansion Beams */}
+                    <div className="space-y-1 sm:space-y-2 pt-2 sm:pt-4 border-t border-neutral-200/80 mt-auto">
+                      {[
+                        { tag: "CAREERS", desc: "Transforming creative talent into sustainable careers." },
+                        { tag: "BUSINESSES", desc: "Empowering creators to build scalable businesses." },
+                        { tag: "OPPORTUNITY", desc: "Durable networks unlocking continuous opportunities." }
+                      ].map((pillar, i) => (
+                        <div 
+                          key={i} 
+                          style={{ animation: `pillarSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.45 + i * 0.14}s both` }}
+                          className="group/item relative flex flex-col sm:flex-row sm:items-start gap-0.5 sm:gap-2.5 p-1 sm:p-2 md:p-3 rounded-lg sm:rounded-xl hover:bg-neutral-100/80 hover:translate-x-1 transition-all duration-300 cursor-default overflow-hidden"
+                        >
+                          {/* Left Accent Neon Beam */}
+                          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#e5252a] scale-y-0 group-hover/item:scale-y-100 transition-transform duration-300 origin-center" />
+                          <span className="text-[7px] xs:text-[8px] sm:text-[9px] md:text-[10px] font-mono tracking-wider text-neutral-400 group-hover/item:text-[#e5252a] transition-colors sm:mt-0.5 min-w-0 sm:min-w-[65px]">
+                            [{pillar.tag}]
+                          </span>
+                          <p className="text-[8.5px] xs:text-[9.5px] sm:text-xs font-light text-neutral-600 group-hover/item:text-neutral-900 leading-tight sm:leading-relaxed transition-colors">
+                            {pillar.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* ────────── CARD 2: CORE MISSION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
+              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-2' : 'opacity-0 -translate-y-full'}`}>
+                <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
+                  {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
+                  <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
+                    <div 
+                      className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
+                      style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards' }}
+                    />
+                  </div>
+
+                  {/* Glowing Top Shimmer Beam */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e5252a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
+
+                  {/* Architectural Static Watermark */}
+                  <div className="absolute -right-2 sm:-right-4 -bottom-3 sm:-bottom-6 text-3xl sm:text-6xl md:text-8xl lg:text-[11rem] font-thin text-neutral-950/[0.03] pointer-events-none select-none uppercase tracking-tighter leading-none z-0">
+                    MISSION
+                  </div>
+
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                      {/* Header Tag Bar */}
+                      <div className="flex justify-between items-center mb-1.5 sm:mb-4 lg:mb-6">
+                        <div className="flex items-center gap-1 sm:gap-3">
+                          <span className="text-[7.5px] xs:text-[8.5px] sm:text-[10px] md:text-xs font-mono tracking-wider sm:tracking-[0.25em] uppercase text-neutral-400">
+                            OPERATIONAL VECTOR
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Main Statement with Expanding Neon Underline */}
+                      <h3 className="text-[11px] xs:text-xs sm:text-base md:text-xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-2 sm:mb-4 lg:mb-6">
+                        <span className="relative inline-block font-medium">
+                          Empower creative talent
+                          <span 
+                            className="absolute left-0 -bottom-0.5 sm:-bottom-1 h-[1.5px] sm:h-[2.5px] bg-gradient-to-r from-[#e5252a] via-[#f84347] to-[#e5252a] rounded-full shadow-[0_0_10px_rgba(229,37,42,0.5)]" 
+                            style={{ animation: 'underlineExpand 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both' }}
+                          />
+                        </span>{' '}
+                        through education, innovation, and ventures shaping the future economy.
+                      </h3>
+                    </div>
+
+                    {/* Sub-Pillars / Cascading Breakdown with Tactile Expansion Beams */}
+                    <div className="space-y-1 sm:space-y-2 pt-2 sm:pt-4 border-t border-neutral-200/80 mt-auto">
+                      {[
+                        { tag: "EDUCATION", desc: "Imparting cutting-edge craft and design leadership." },
+                        { tag: "INNOVATION", desc: "Pioneering novel tools and creative interfaces." },
+                        { tag: "VENTURES", desc: "Incubating dynamic companies redefining industry." }
+                      ].map((pillar, i) => (
+                        <div 
+                          key={i} 
+                          style={{ animation: `pillarSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.55 + i * 0.14}s both` }}
+                          className="group/item relative flex flex-col sm:flex-row sm:items-start gap-0.5 sm:gap-2.5 p-1 sm:p-2 md:p-3 rounded-lg sm:rounded-xl hover:bg-neutral-100/80 hover:translate-x-1 transition-all duration-300 cursor-default overflow-hidden"
+                        >
+                          {/* Left Accent Neon Beam */}
+                          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#e5252a] scale-y-0 group-hover/item:scale-y-100 transition-transform duration-300 origin-center" />
+                          <span className="text-[7px] xs:text-[8px] sm:text-[9px] md:text-[10px] font-mono tracking-wider text-neutral-400 group-hover/item:text-[#e5252a] transition-colors sm:mt-0.5 min-w-0 sm:min-w-[65px]">
+                            [{pillar.tag}]
+                          </span>
+                          <p className="text-[8.5px] xs:text-[9.5px] sm:text-xs font-light text-neutral-600 group-hover/item:text-neutral-900 leading-tight sm:leading-relaxed transition-colors">
+                            {pillar.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
             </div>
-
-            {/* ────────── CARD 2: CORE MISSION (SCROLL-TRIGGERED 3D RISE + SHEEN + AUTONOMOUS DRIFT + 3D TILT) ────────── */}
-            <div 
-              onMouseMove={(e) => handleCardMouseMove(e, setCard2Tilt)}
-              onMouseLeave={() => handleCardMouseLeave(setCard2Tilt)}
-              style={{
-                animation: 'cardRiseRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both',
-                transform: card2Tilt.isHovered 
-                  ? `perspective(1000px) rotateX(${card2Tilt.rotateX}deg) rotateY(${card2Tilt.rotateY}deg) translateZ(14px) translateY(-8px)` 
-                  : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) translateY(0px)',
-                boxShadow: card2Tilt.isHovered 
-                  ? '0 30px 65px -15px rgba(229, 37, 42, 0.14), 0 20px 40px -10px rgba(0, 0, 0, 0.07)' 
-                  : '0 10px 30px -10px rgba(0, 0, 0, 0.03)',
-                transformStyle: 'preserve-3d',
-                transition: card2Tilt.isHovered 
-                  ? 'transform 0.12s ease-out, box-shadow 0.3s ease' 
-                  : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease',
-              }}
-              className="group relative p-5 sm:p-7 lg:p-8 rounded-2xl sm:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 overflow-hidden flex flex-col justify-between cursor-default"
-            >
-              {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
-              <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl sm:rounded-3xl">
-                <div 
-                  className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
-                  style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards' }}
-                />
-              </div>
-
-              {/* Living Autonomous Ambient Drift Spotlight (Active when not hovering) */}
-              <div 
-                className="pointer-events-none absolute -inset-10 blur-3xl transition-opacity duration-700 z-0"
-                style={{
-                  opacity: card2Tilt.isHovered ? 0 : 0.65,
-                  background: 'radial-gradient(circle, rgba(229, 37, 42, 0.08) 0%, transparent 60%)',
-                  animation: 'idleSpotDrift2 16s ease-in-out infinite'
-                }}
-              />
-
-              {/* Dynamic Luminous Mouse Spotlight Sheen (Active on hover) */}
-              <div 
-                className="pointer-events-none absolute inset-0 transition-opacity duration-300 z-10"
-                style={{
-                  opacity: card2Tilt.isHovered ? 1 : 0,
-                  background: `radial-gradient(550px circle at ${card2Tilt.spotX}px ${card2Tilt.spotY}px, rgba(229, 37, 42, 0.09), transparent 65%)`
-                }}
-              />
-
-              {/* Glowing Top Shimmer Beam */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#e5252a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
-
-              {/* Floating Counter-Parallax Kinetic Architectural Watermark */}
-              <div 
-                className="absolute -right-4 -bottom-6 text-7xl sm:text-9xl lg:text-[11rem] font-thin text-neutral-950/[0.03] pointer-events-none select-none uppercase tracking-tighter leading-none will-change-transform z-0"
-                style={{
-                  animation: 'floatWatermark2 16s ease-in-out infinite',
-                  transform: card2Tilt.isHovered 
-                    ? `translate3d(${card2Tilt.rotateY * -3.5}px, ${card2Tilt.rotateX * 3.5}px, 0)` 
-                    : undefined,
-                  transition: card2Tilt.isHovered ? 'transform 0.15s ease-out' : 'transform 0.6s ease-out'
-                }}
-              >
-                MISSION
-              </div>
-
-              <div className="relative z-10">
-                {/* Header Tag Bar */}
-                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-neutral-400">
-                      OPERATIONAL VECTOR
-                    </span>
-                  </div>
-                </div>
-
-                {/* Main Statement with Expanding Neon Underline */}
-                <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-light leading-snug text-neutral-950 tracking-tight mb-4 sm:mb-6">
-                  <span className="relative inline-block font-medium">
-                    Empower creative talent
-                    <span 
-                      className="absolute left-0 -bottom-1 h-[2.5px] bg-gradient-to-r from-[#e5252a] via-[#f84347] to-[#e5252a] rounded-full shadow-[0_0_10px_rgba(229,37,42,0.5)]" 
-                      style={{ animation: 'underlineExpand 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both' }}
-                    />
-                  </span>{' '}
-                  through education, innovation, and entrepreneurship while building ventures that shape the future of the creative economy.
-                </h3>
-
-                {/* Sub-Pillars / Cascading Breakdown with Tactile Expansion Beams */}
-                <div className="space-y-2 sm:space-y-2.5 pt-4 sm:pt-5 border-t border-neutral-200/80">
-                  {[
-                    { tag: "EDUCATION", desc: "Imparting cutting-edge craft, design leadership, and digital literacy." },
-                    { tag: "INNOVATION", desc: "Pioneering novel tools, creative interfaces, and technical systems." },
-                    { tag: "VENTURES", desc: "Incubating dynamic companies that redefine the creative industry." }
-                  ].map((pillar, i) => (
-                    <div 
-                      key={i} 
-                      style={{ animation: `pillarSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.55 + i * 0.14}s both` }}
-                      className="group/item relative flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 p-2.5 sm:p-3.5 rounded-xl hover:bg-neutral-100/80 hover:translate-x-1.5 transition-all duration-300 cursor-default overflow-hidden"
-                    >
-                      {/* Left Accent Neon Beam */}
-                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#e5252a] scale-y-0 group-hover/item:scale-y-100 transition-transform duration-300 origin-center" />
-                      <span className="text-[10px] font-mono tracking-wider text-neutral-400 group-hover/item:text-[#e5252a] transition-colors mt-0.5 min-w-[70px] sm:min-w-[85px]">
-                        [{pillar.tag}]
-                      </span>
-                      <p className="text-xs font-light text-neutral-600 group-hover/item:text-neutral-900 leading-relaxed transition-colors">
-                        {pillar.desc}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
           </div>
 
 
@@ -1403,22 +1425,22 @@ export default function FounderPortfolio() {
       {/* ──────────────────────────────────────────────
           SECTION 6: ADVISORY, CONTACT & TRANSMISSION
       ────────────────────────────────────────────── */}
-      <footer ref={contactRef} id="contact" className="relative py-10 sm:py-12 md:py-14 lg:py-16 px-5 sm:px-10 md:px-16 border-t border-neutral-200 bg-[#fafafa] overflow-hidden">
+      <footer ref={contactRef} id="contact" className="relative py-6 sm:py-8 md:py-10 px-4 sm:px-8 md:px-12 lg:px-16 border-t border-neutral-200 bg-[#fafafa] overflow-hidden">
         {/* Ambient Subtle Architectural Lighting */}
         <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
         <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-neutral-100/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
 
         <div key={contactAnimKey} className="max-w-6xl mx-auto w-full relative z-10">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 mb-6 sm:mb-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 mb-4 sm:mb-5 items-center">
             
             {/* ────────── LEFT COLUMN: EXECUTIVE DIRECT COMMUNICATIONS HUB ────────── */}
-            <div className="lg:col-span-5 flex flex-col justify-center space-y-4 sm:space-y-5">
+            <div className="lg:col-span-5 flex flex-col justify-center space-y-3 sm:space-y-4">
               
               {/* Header Group */}
               <div style={{ animation: 'contactHeaderRise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
                 
-                <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] uppercase text-neutral-950 mb-3 sm:mb-4">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] uppercase text-neutral-950 mb-2.5 sm:mb-3">
                   LET’S BUILD <br />
                   SOMETHING <br />
                   <span className="font-bold italic text-[#e5252a]">
@@ -1438,10 +1460,10 @@ export default function FounderPortfolio() {
               className="lg:col-span-7"
               style={{ animation: 'contactRiseRight 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both' }}
             >
-              <div className="relative p-5 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-neutral-200/90 bg-white/95 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
+              <div className="relative p-4 sm:p-5 md:p-6 rounded-2xl border border-neutral-200/90 bg-white/95 backdrop-blur-xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
                 
                 {/* Diagonal Light Sweep Beam upon Arrival */}
-                <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl sm:rounded-3xl">
+                <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl">
                   <div 
                     className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-neutral-200/40 to-transparent blur-md"
                     style={{ animation: 'contactSheenSweep 2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards' }}
@@ -1449,46 +1471,46 @@ export default function FounderPortfolio() {
                 </div>
 
                 {/* Corner Viewfinder Telemetry Reticles */}
-                <span className="absolute top-3.5 left-4 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                <span className="absolute top-3.5 right-4 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                <span className="absolute bottom-3.5 left-4 text-[9px] font-mono text-neutral-300 select-none">+</span>
-                <span className="absolute bottom-3.5 right-4 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                <span className="absolute top-3 left-3.5 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                <span className="absolute top-3 right-3.5 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                <span className="absolute bottom-3 left-3.5 text-[9px] font-mono text-neutral-300 select-none">+</span>
+                <span className="absolute bottom-3 right-3.5 text-[9px] font-mono text-neutral-300 select-none">+</span>
 
                 {/* Terminal Header Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 pb-3 mb-4 sm:mb-5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-2 mb-3 sm:mb-3.5">
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold tracking-tight text-neutral-950">
+                    <h3 className="text-sm sm:text-base font-bold tracking-tight text-neutral-950">
                       DISPATCH INQUIRY
                     </h3>
                   </div>
                 </div>
 
                 {formStatus === 'success' ? (
-                  <div className="py-10 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto text-xl font-light shadow-xs">
+                  <div className="py-8 text-center space-y-2.5">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto text-lg font-light shadow-xs">
                       ✓
                     </div>
-                    <h4 className="text-lg font-bold tracking-tight text-neutral-950">Transmission Successful</h4>
+                    <h4 className="text-base font-bold tracking-tight text-neutral-950">Transmission Successful</h4>
                     <p className="text-xs text-neutral-600 max-w-sm mx-auto leading-relaxed">
                       Thank you for reaching out. Your transmission has been dispatched to Anees Ark and will be reviewed within the active response window.
                     </p>
                     <button
                       type="button"
                       onClick={() => setFormStatus('idle')}
-                      className="mt-3 inline-block text-xs font-mono tracking-wider uppercase text-neutral-800 hover:text-[#e5252a] underline underline-offset-4 cursor-pointer transition-colors"
+                      className="mt-2 inline-block text-xs font-mono tracking-wider uppercase text-neutral-800 hover:text-[#e5252a] underline underline-offset-4 cursor-pointer transition-colors"
                     >
                       Send another message →
                     </button>
                   </div>
                 ) : (
-                  <form onSubmit={handleFormSubmit} className="space-y-3.5 sm:space-y-4">
+                  <form onSubmit={handleFormSubmit} className="space-y-2.5 sm:space-y-3">
                     
                     {/* Inquiry Scope Chips */}
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-2">
+                      <label className="block text-[9px] font-mono tracking-[0.25em] text-neutral-400 uppercase mb-1.5">
                         SELECT INQUIRY SCOPE
                       </label>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                         {[
                           { id: "01", label: "Venture Advisory" },
                           { id: "02", label: "Creative Direction" },
@@ -1501,13 +1523,13 @@ export default function FounderPortfolio() {
                               key={scope.label}
                               type="button"
                               onClick={() => setFormData({ ...formData, subject: scope.label })}
-                              className={`group/btn relative py-2 px-2 rounded-xl border text-center transition-all duration-300 cursor-pointer ${
+                              className={`group/btn relative py-1.5 px-2 rounded-lg border text-center transition-all duration-300 cursor-pointer ${
                                 isSelected
                                   ? 'bg-neutral-950 border-neutral-950 text-white shadow-xs'
                                   : 'bg-neutral-50/80 hover:bg-white border-neutral-200 text-neutral-700 hover:border-neutral-300'
                               }`}
                             >
-                              <span className="block text-[10px] sm:text-[11px] font-medium leading-tight truncate">
+                              <span className="block text-[9.5px] sm:text-[10.5px] font-medium leading-tight truncate">
                                 {scope.label}
                               </span>
                             </button>
@@ -1517,11 +1539,11 @@ export default function FounderPortfolio() {
                     </div>
 
                     {/* Name & Email Fields */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                       
                       {/* Name */}
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1.5">
+                        <label className="block text-[9px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1">
                           YOUR IDENTITY *
                         </label>
                         <input
@@ -1530,13 +1552,13 @@ export default function FounderPortfolio() {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Your Full Name"
-                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-3 py-2 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-950 focus:ring-1 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
 
                       {/* Email */}
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1.5">
+                        <label className="block text-[9px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1">
                           DIRECT EMAIL *
                         </label>
                         <input
@@ -1545,7 +1567,7 @@ export default function FounderPortfolio() {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="name@company.com"
-                          className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
+                          className="w-full px-3 py-2 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-950 focus:ring-1 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400"
                         />
                       </div>
 
@@ -1553,21 +1575,21 @@ export default function FounderPortfolio() {
 
                     {/* Message */}
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1.5">
+                      <label className="block text-[9px] font-mono tracking-[0.2em] text-neutral-400 uppercase mb-1">
                         PROJECT BRIEF *
                       </label>
                       <textarea
                         required
-                        rows={3}
+                        rows={2}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder="Outline your venture scope, creative brief, or collaboration parameters..."
-                        className="w-full px-3.5 py-2.5 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-xl focus:outline-none focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
+                        className="w-full px-3 py-2 text-base sm:text-xs bg-neutral-50/70 border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-950 focus:ring-1 focus:ring-neutral-950/10 focus:bg-white transition-all text-neutral-900 placeholder:text-neutral-400 resize-none"
                       />
                     </div>
 
                     {formErrorMessage && (
-                      <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+                      <div className="p-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
                         <span>{formErrorMessage}</span>
                         <button type="button" onClick={() => setFormErrorMessage('')} className="text-red-500 font-bold ml-2">×</button>
                       </div>
@@ -1577,17 +1599,17 @@ export default function FounderPortfolio() {
                     <button
                       type="submit"
                       disabled={formStatus === 'submitting'}
-                      className="w-full group/btn relative flex items-center justify-center gap-2.5 rounded-xl bg-[#e5252a] hover:bg-[#cb1d22] text-white py-3 sm:py-3.5 text-xs font-mono font-semibold tracking-widest uppercase transition-all duration-300 disabled:opacity-60 shadow-[0_6px_25px_rgba(229,37,42,0.3)] hover:shadow-[0_8px_32px_rgba(229,37,42,0.45)] active:scale-[0.99] cursor-pointer overflow-hidden"
+                      className="w-full group/btn relative flex items-center justify-center gap-2 rounded-lg bg-[#e5252a] hover:bg-[#cb1d22] text-white py-2.5 sm:py-3 text-[11px] font-mono font-semibold tracking-widest uppercase transition-all duration-300 disabled:opacity-60 shadow-[0_4px_18px_rgba(229,37,42,0.25)] hover:shadow-[0_6px_24px_rgba(229,37,42,0.35)] active:scale-[0.99] cursor-pointer overflow-hidden"
                     >
                       {formStatus === 'submitting' ? (
                         <>
-                          <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                           <span>TRANSMITTING DISPATCH...</span>
                         </>
                       ) : (
                         <>
                           <span>SEND</span>
-                          <span className="text-sm font-mono transition-transform duration-300 group-hover/btn:translate-x-1">
+                          <span className="text-xs font-mono transition-transform duration-300 group-hover/btn:translate-x-1">
                             →
                           </span>
                         </>
@@ -1603,57 +1625,47 @@ export default function FounderPortfolio() {
           </div>
 
           {/* ──────────────────────────────────────────────
-              DEDICATED SEPARATE SECTION: OFFICIAL SOCIAL MEDIA ECOSYSTEM
+              MINIMAL SOCIAL PLATFORMS STRIP
           ────────────────────────────────────────────── */}
           <div 
-            className="pt-5 sm:pt-6 border-t border-neutral-200/80 mb-6 sm:mb-8"
+            className="pt-3.5 sm:pt-4 border-t border-neutral-200/80 mb-3.5 sm:mb-4 flex flex-col items-center"
             style={{ animation: 'contactRiseLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both' }}
           >
-            {/* Section Header */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-2.5 sm:pb-3 gap-2 mb-3 sm:mb-4">
-              <div>
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight uppercase text-neutral-950">
-                  CONNECT ACROSS <span className="font-bold italic text-[#e5252a]">PLATFORMS.</span>
-                </h3>
-              </div>
+            <div className="flex items-center justify-center pb-2 text-center">
+              <span className="text-[8.5px] sm:text-[9.5px] font-mono tracking-[0.25em] text-neutral-400 uppercase font-semibold">
+                CONNECT ACROSS <span className="text-[#e5252a] font-bold">PLATFORMS</span>
+              </span>
             </div>
 
-            {/* 2-Column Grid for Instagram & LinkedIn - Minimal Luxury Design */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {/* 2-Column Minimal Sleek Badges (Centered in the screen) */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5 w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
               
               {/* ─── MINIMAL INSTAGRAM ─── */}
               <a
                 href="https://www.instagram.com/anees_ark/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-neutral-200/90 bg-white/90 hover:border-neutral-400 hover:bg-white hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative flex items-center justify-between py-1.5 px-2.5 sm:py-2 sm:px-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-400 hover:shadow-xs transition-all duration-200 cursor-pointer"
               >
-                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                  {/* Minimal Icon Badge */}
-                  <div className="w-10 h-10 rounded-xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-center text-neutral-700 group-hover:text-black group-hover:border-neutral-300 transition-all duration-300 shrink-0">
-                    <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-700 group-hover:text-black shrink-0 transition-colors">
+                    <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                     </svg>
                   </div>
-
-                  <div className="min-w-0">
-                    <span className="block text-[9px] sm:text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight">
+                  <div className="flex flex-col min-w-0 leading-tight">
+                    <span className="text-[7px] sm:text-[8px] font-mono tracking-wider text-neutral-400 uppercase">
                       INSTAGRAM
                     </span>
-                    <h4 className="text-sm sm:text-base font-medium text-neutral-950 group-hover:text-black transition-colors truncate">
+                    <span className="text-[11px] sm:text-xs font-semibold text-neutral-950 group-hover:text-black truncate">
                       @anees_ark
-                    </h4>
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 sm:gap-2 text-neutral-400 group-hover:text-neutral-950 transition-colors shrink-0 ml-3">
-                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase font-semibold opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-300 hidden sm:inline">
-                    VISIT
-                  </span>
-                  <span className="text-sm sm:text-base font-mono group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
-                    ↗
-                  </span>
-                </div>
+                <span className="text-[11px] sm:text-xs font-mono text-neutral-400 group-hover:text-neutral-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 ml-1 shrink-0">
+                  ↗
+                </span>
               </a>
 
               {/* ─── MINIMAL LINKEDIN ─── */}
@@ -1661,34 +1673,27 @@ export default function FounderPortfolio() {
                 href="https://www.linkedin.com/in/anees-ark-bb77a1265/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-neutral-200/90 bg-white/90 hover:border-neutral-400 hover:bg-white hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.05)] transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group relative flex items-center justify-between py-1.5 px-2.5 sm:py-2 sm:px-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-400 hover:shadow-xs transition-all duration-200 cursor-pointer"
               >
-                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                  {/* Minimal Icon Badge */}
-                  <div className="w-10 h-10 rounded-xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-center text-neutral-700 group-hover:text-black group-hover:border-neutral-300 transition-all duration-300 shrink-0">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-neutral-100 flex items-center justify-center text-neutral-700 group-hover:text-black shrink-0 transition-colors">
+                    <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                     </svg>
                   </div>
-
-                  <div className="min-w-0">
-                    <span className="block text-[9px] sm:text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight">
+                  <div className="flex flex-col min-w-0 leading-tight">
+                    <span className="text-[7px] sm:text-[8px] font-mono tracking-wider text-neutral-400 uppercase">
                       LINKEDIN
                     </span>
-                    <h4 className="text-sm sm:text-base font-medium text-neutral-950 group-hover:text-black transition-colors truncate">
+                    <span className="text-[11px] sm:text-xs font-semibold text-neutral-950 group-hover:text-black truncate">
                       Anees Ark
-                    </h4>
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 sm:gap-2 text-neutral-400 group-hover:text-neutral-950 transition-colors shrink-0 ml-3">
-                  <span className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase font-semibold opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-300 hidden sm:inline">
-                    CONNECT
-                  </span>
-                  <span className="text-sm sm:text-base font-mono group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
-                    ↗
-                  </span>
-                </div>
+                <span className="text-[11px] sm:text-xs font-mono text-neutral-400 group-hover:text-neutral-950 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 ml-1 shrink-0">
+                  ↗
+                </span>
               </a>
 
             </div>
@@ -1697,13 +1702,13 @@ export default function FounderPortfolio() {
         </div>
 
         {/* ────────── INTEGRATED ARCHITECTURAL FOOTER ────────── */}
-        <div className="max-w-6xl mx-auto w-full pt-5 sm:pt-6 border-t border-neutral-200/90 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono tracking-[0.25em] sm:tracking-[0.35em] text-neutral-400 uppercase gap-3 sm:gap-4 text-center sm:text-left relative z-10">
+        <div className="max-w-6xl mx-auto w-full pt-3 sm:pt-3.5 border-t border-neutral-200/90 flex flex-col sm:flex-row justify-between items-center text-[9px] font-mono tracking-[0.25em] text-neutral-400 uppercase gap-2 sm:gap-3 text-center sm:text-left relative z-10">
           <span>© {new Date().getFullYear()} ANEES ARK — ALL RIGHTS RESERVED</span>
           
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="hover:text-neutral-950 flex items-center gap-2 transition-colors cursor-pointer group"
+            className="hover:text-neutral-950 flex items-center gap-1.5 transition-colors cursor-pointer group"
           >
             <span>BACK TO TOP</span>
             <span className="text-neutral-400 group-hover:text-neutral-950 group-hover:-translate-y-0.5 transition-transform">↑</span>
