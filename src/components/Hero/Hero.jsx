@@ -80,16 +80,18 @@ export default function FounderPortfolio() {
     return () => observer.disconnect();
   }, []);
 
-  // Section 2 scroll-down visibility observer (re-triggers every time user enters Section 2)
+  // Section 2 scroll-down visibility observer
   const [isSection2Visible, setIsSection2Visible] = useState(false);
   const section2Ref = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsSection2Visible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setIsSection2Visible(true);
+        }
       },
-      { threshold: 0.01, rootMargin: '100px 0px 50px 0px' }
+      { threshold: 0.01, rootMargin: '350px 0px 350px 0px' }
     );
 
     if (section2Ref.current) {
@@ -110,17 +112,20 @@ export default function FounderPortfolio() {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
+      if (isSection2Visible) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
     }
-  }, []);
+  }, [isSection2Visible]);
 
   // ──────────────────────────────────────────────
   // SECTION 3: VENTURES ENTRANCE ANIMATION OBSERVER
-  // Re-triggers every time user scrolls into Section 3
+  // Smoothly triggers 400px before entering viewport, stays visible permanently
   // ──────────────────────────────────────────────
   const venturesRef = useRef(null);
   const venturesScrollRef = useRef(null);
-  const [venturesAnimKey, setVenturesAnimKey] = useState(0);
   const [isVenturesVisible, setIsVenturesVisible] = useState(false);
   const [activeVentureIdx, setActiveVentureIdx] = useState(0);
 
@@ -147,12 +152,11 @@ export default function FounderPortfolio() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVenturesVisible(entry.isIntersecting);
         if (entry.isIntersecting) {
-          setVenturesAnimKey((prev) => prev + 1);
+          setIsVenturesVisible(true);
         }
       },
-      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
+      { threshold: 0.01, rootMargin: '400px 0px 400px 0px' }
     );
 
     if (venturesRef.current) {
@@ -163,23 +167,20 @@ export default function FounderPortfolio() {
   }, []);
 
   // ──────────────────────────────────────────────
-  // SECTION 4: VISION & MISSION INTERACTIVE 3D MOTION & SPOTLIGHT
+  // SECTION 4: VISION & MISSION ANIMATION OBSERVER
+  // Smoothly triggers 400px before entering viewport, stays visible permanently
   // ──────────────────────────────────────────────
   const section4Ref = useRef(null);
   const [isSection4Visible, setIsSection4Visible] = useState(false);
-  const [section4AnimKey, setSection4AnimKey] = useState(0);
-  const [card1Tilt, setCard1Tilt] = useState({ rotateX: 0, rotateY: 0, spotX: 0, spotY: 0, isHovered: false });
-  const [card2Tilt, setCard2Tilt] = useState({ rotateX: 0, rotateY: 0, spotX: 0, spotY: 0, isHovered: false });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsSection4Visible(entry.isIntersecting);
         if (entry.isIntersecting) {
-          setSection4AnimKey((prev) => prev + 1);
+          setIsSection4Visible(true);
         }
       },
-      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
+      { threshold: 0.01, rootMargin: '400px 0px 400px 0px' }
     );
 
     if (section4Ref.current) {
@@ -190,21 +191,19 @@ export default function FounderPortfolio() {
   }, []);
 
   // ──────────────────────────────────────────────
-  // CONTACT SECTION: SCROLL-TRIGGERED MAXIMUM ANIMATION OBSERVER
+  // CONTACT SECTION: SCROLL-TRIGGERED OBSERVER
   // ──────────────────────────────────────────────
   const contactRef = useRef(null);
   const [isContactVisible, setIsContactVisible] = useState(false);
-  const [contactAnimKey, setContactAnimKey] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsContactVisible(entry.isIntersecting);
         if (entry.isIntersecting) {
-          setContactAnimKey((prev) => prev + 1);
+          setIsContactVisible(true);
         }
       },
-      { threshold: 0.01, rootMargin: '120px 0px 50px 0px' }
+      { threshold: 0.01, rootMargin: '400px 0px 400px 0px' }
     );
 
     if (contactRef.current) {
@@ -358,7 +357,7 @@ export default function FounderPortfolio() {
       id: "03", 
       name: "CREATER'S LAB", 
       role: "Founder & Product Architect",
-      subtitle: "Hardware & Tooling Lab",
+      subtitle: "CREATOR EDUCATION & SKILLS HUB",
       category: "Hardware Incubator",
       period: "2026 — Present",
       status: "Active", 
@@ -367,7 +366,7 @@ export default function FounderPortfolio() {
       image: "/ventures/createrslab.jpg",
       url: "https://createrslab.com",
       description: "CREATER'S LAB is a next-generation experimental innovation lab and specialty hardware incubator focused on tangible user interfaces and physical creative instruments.",
-      shortDescription: "Experimental hardware innovation lab and incubator prototyping tangible user interfaces, tactile controllers, and dedicated creator instruments.",
+      shortDescription: "An online platform transforming aspiring talent into skilled creators through practical training in videography, advanced editing, and 360-degree digital marketing.",
       stat1: { label: "DOMAIN", value: "Tangible UI" },
       stat2: { label: "FOCUS", value: "Creator Tools" },
       tags: ["Experimental Hardware", "Tangible Interfaces", "Industrial CAD", "Prototyping"]
@@ -670,65 +669,84 @@ export default function FounderPortfolio() {
         }
         @keyframes ventureFadeInMobile {
           0% {
-            opacity: 0;
-            transform: translate3d(0, 16px, 0) scale(0.97);
-          }
-          100% {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-        }
-        @media (max-width: 767px) {
-          .venture-anim-center {
-            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.02s both;
-            position: relative;
-            will-change: transform, opacity;
-          }
-          .venture-anim-left {
-            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
-            position: relative;
-            will-change: transform, opacity;
-          }
-          .venture-anim-right {
-            animation: ventureFadeInMobile 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-            position: relative;
-            will-change: transform, opacity;
-          }
-        }
-
-        /* ──────────────────────────────────────────────
-           SECTION 4: VISION & MISSION CARDS FALLING DOWN FROM SINGLE LINE
-           Masked at the single line: cards emerge from the line and drop
-           downwards with physical gravity, overshoot, and soft bounce settle.
-        ────────────────────────────────────────────── */
-        @keyframes visionCardFallFromLine {
-          0% {
-            opacity: 0;
-            transform: translate3d(0, -110%, 0);
-          }
-          20% {
-            opacity: 1;
-          }
-          65% {
-            transform: translate3d(0, 10px, 0);
-          }
-          82% {
-            transform: translate3d(0, -3px, 0);
+            opacity: 0.95;
+            transform: translate3d(0, 8px, 0);
           }
           100% {
             opacity: 1;
             transform: translate3d(0, 0, 0);
           }
         }
+        @media (max-width: 767px) {
+          .venture-anim-center {
+            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+            position: relative;
+            will-change: transform, opacity;
+          }
+          .venture-anim-left {
+            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.03s both;
+            position: relative;
+            will-change: transform, opacity;
+          }
+          .venture-anim-right {
+            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+            position: relative;
+            will-change: transform, opacity;
+          }
 
-        .vision-card-fall-1 {
-          animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.02s both;
-          will-change: transform, opacity;
+          @keyframes visionCardFallMobile {
+            0% {
+              opacity: 0.95;
+              transform: translate3d(0, -12px, 0);
+            }
+            100% {
+              opacity: 1;
+              transform: translate3d(0, 0, 0);
+            }
+          }
+          .vision-card-fall-1 {
+            animation: visionCardFallMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+            will-change: transform, opacity;
+          }
+          .vision-card-fall-2 {
+            animation: visionCardFallMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both;
+            will-change: transform, opacity;
+          }
         }
 
-        .vision-card-fall-2 {
-          animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
-          will-change: transform, opacity;
+        /* ──────────────────────────────────────────────
+           SECTION 4: VISION & MISSION CARDS FALLING DOWN (DESKTOP)
+        ────────────────────────────────────────────── */
+        @media (min-width: 768px) {
+          @keyframes visionCardFallFromLine {
+            0% {
+              opacity: 0;
+              transform: translate3d(0, -110%, 0);
+            }
+            20% {
+              opacity: 1;
+            }
+            65% {
+              transform: translate3d(0, 10px, 0);
+            }
+            82% {
+              transform: translate3d(0, -3px, 0);
+            }
+            100% {
+              opacity: 1;
+              transform: translate3d(0, 0, 0);
+            }
+          }
+
+          .vision-card-fall-1 {
+            animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.02s both;
+            will-change: transform, opacity;
+          }
+
+          .vision-card-fall-2 {
+            animation: visionCardFallFromLine 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+            will-change: transform, opacity;
+          }
         }
 
       `}</style>
@@ -879,14 +897,11 @@ export default function FounderPortfolio() {
           <div className="relative w-full h-[48vh] min-h-[330px] max-h-[440px] flex items-end overflow-hidden">
             
             {/* LAYER 1: NAME ON THE LEFT (Completely visible, not covered by model!) */}
-            <div 
-              key={`hero-mobile-name-${heroAnimKey}`}
-              className="absolute left-1 inset-y-0 flex flex-col justify-center pointer-events-none select-none z-10 py-2"
-            >
+            <div className="absolute left-1 inset-y-0 flex flex-col justify-center pointer-events-none select-none z-10 py-2">
               {/* ANEES */}
               <div className="flex items-baseline justify-start">
                 <span 
-                  style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both' }}
+                  style={{ animation: 'heroNameFall 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both' }}
                   className="text-[16vw] xs:text-[14vw] sm:text-7xl font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans will-change-transform"
                 >
                   ANEES
@@ -896,7 +911,7 @@ export default function FounderPortfolio() {
               {/* ARK */}
               <div className="flex items-baseline justify-start pl-1 sm:pl-3">
                 <span 
-                  style={{ animation: 'heroNameFall 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both' }}
+                  style={{ animation: 'heroNameFall 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both' }}
                   className="text-[17.5vw] xs:text-[15.5vw] sm:text-8xl font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans will-change-transform"
                 >
                   ARK
@@ -906,7 +921,7 @@ export default function FounderPortfolio() {
               {/* Tagline Pill */}
               <div className="flex items-center justify-start pt-2 pl-1 sm:pl-3">
                 <div 
-                  style={{ animation: 'heroTaglineFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both' }}
+                  style={{ animation: 'heroTaglineFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both' }}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm will-change-transform"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a] animate-pulse" />
@@ -923,6 +938,9 @@ export default function FounderPortfolio() {
                 <img
                   src={heroPortrait}
                   alt="Anees Ark"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
                   style={{
                     maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)'
@@ -936,8 +954,7 @@ export default function FounderPortfolio() {
 
           {/* EDITORIAL CARD ON MOBILE (Exact same content as laptop view) */}
           <div 
-            key={`hero-mobile-card-${heroAnimKey}`}
-            style={{ animation: 'heroRightSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both' }}
+            style={{ animation: 'heroRightSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both' }}
             className="relative z-30 -mt-3 sm:-mt-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-[0_8px_24px_rgba(0,0,0,0.05)] space-y-2.5 pointer-events-auto"
           >
             <div>
@@ -1000,7 +1017,7 @@ export default function FounderPortfolio() {
           <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start transition-all duration-600 ease-out transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0 scale-100' 
-              : 'opacity-0 translate-y-12 scale-[0.97]'
+              : 'md:opacity-0 md:translate-y-12 md:scale-[0.97] opacity-100 translate-y-0 scale-100'
           }`}>
             <div className="relative w-full max-w-[340px] sm:max-w-[360px] md:max-w-none aspect-[9/16] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 hover:border-[#e5252a]/40 bg-neutral-950 shadow-md group transition-colors duration-300">
               {/* Subtle top red accent line */}
@@ -1046,7 +1063,7 @@ export default function FounderPortfolio() {
           <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 transition-all duration-600 delay-75 ease-out transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-12'
+              : 'md:opacity-0 md:translate-y-12 opacity-100 translate-y-0'
           }`}>
             {/* Kicker Tag: Red Brand Pill */}
             <div>
@@ -1087,8 +1104,8 @@ export default function FounderPortfolio() {
         className="relative bg-[#fafafa] border-t border-neutral-200 py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-12 lg:px-16 overflow-hidden"
       >
         {/* Subtle Ambient Lighting */}
-        <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none z-0" />
-        <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-[#e5252a]/[0.03] rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="absolute top-1/4 -right-48 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[50px] md:blur-[130px] pointer-events-none z-0" />
+        <div className="absolute bottom-1/4 -left-48 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#e5252a]/[0.03] rounded-full blur-[50px] md:blur-[120px] pointer-events-none z-0" />
 
         <div className="max-w-6xl mx-auto w-full relative z-10">
           
@@ -1130,13 +1147,12 @@ export default function FounderPortfolio() {
           <div 
             ref={venturesScrollRef}
             onScroll={handleVenturesScroll}
-            key={`ventures-grid-${venturesAnimKey}`} 
             className="flex flex-row overflow-x-auto snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-4 sm:gap-5 py-2 -mx-4 px-4 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-7 lg:gap-8 md:overflow-visible items-stretch"
           >
             {ventures.map((venture, idx) => {
               const animClass = isVenturesVisible
                 ? (idx === 1 ? 'venture-anim-center' : idx === 0 ? 'venture-anim-left' : 'venture-anim-right')
-                : 'opacity-0';
+                : 'md:opacity-0 opacity-100';
 
               return (
                 <div
@@ -1154,6 +1170,8 @@ export default function FounderPortfolio() {
                         <img
                           src={venture.logo}
                           alt={venture.name}
+                          loading="eager"
+                          decoding="async"
                           className="max-h-16 sm:max-h-20 w-auto max-w-[80%] object-contain filter drop-shadow-xs transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
@@ -1232,17 +1250,17 @@ export default function FounderPortfolio() {
         ref={section4Ref}
         className="relative py-6 sm:py-10 md:py-14 lg:py-16 px-3 sm:px-6 md:px-12 lg:px-16 border-t border-neutral-200 bg-white overflow-hidden"
       >
-        {/* Living Kinetic Ambient Mesh Glow Orbs */}
+        {/* Living Kinetic Ambient Mesh Glow Orbs (Desktop only - prevents mobile GPU lag) */}
         <div 
-          className="absolute top-1/4 -left-48 w-[460px] h-[460px] bg-gradient-to-tr from-neutral-200/60 to-neutral-100/40 rounded-full blur-[110px] pointer-events-none -z-0"
+          className="hidden md:block absolute top-1/4 -left-48 w-[460px] h-[460px] bg-gradient-to-tr from-neutral-200/60 to-neutral-100/40 rounded-full blur-[110px] pointer-events-none -z-0"
           style={{ animation: 'floatOrb1 16s ease-in-out infinite' }}
         />
         <div 
-          className="absolute bottom-1/4 -right-48 w-[480px] h-[480px] bg-gradient-to-bl from-[#e5252a]/[0.05] to-[#e5252a]/[0.015] rounded-full blur-[130px] pointer-events-none -z-0"
+          className="hidden md:block absolute bottom-1/4 -right-48 w-[480px] h-[480px] bg-gradient-to-bl from-[#e5252a]/[0.05] to-[#e5252a]/[0.015] rounded-full blur-[130px] pointer-events-none -z-0"
           style={{ animation: 'floatOrb2 20s ease-in-out infinite' }}
         />
 
-        <div key={section4AnimKey} className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-6xl mx-auto relative z-10">
           
           {/* Top Header with Single Line */}
           <div className="flex flex-col md:flex-row md:items-end justify-between pb-3 sm:pb-5 border-b border-neutral-200 gap-2 sm:gap-6">
@@ -1258,10 +1276,10 @@ export default function FounderPortfolio() {
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:gap-6 lg:gap-8">
               
               {/* ────────── CARD 1: CORE VISION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
-              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-1' : 'opacity-0 -translate-y-full'}`}>
+              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-1' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
                 <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
-                  {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
-                  <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
+                  {/* Luminous Diagonal Light Sweep Beam upon Arrival (Desktop only) */}
+                  <div className="hidden sm:block pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
                     <div 
                       className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
                       style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards' }}
@@ -1330,10 +1348,10 @@ export default function FounderPortfolio() {
               </div>
 
               {/* ────────── CARD 2: CORE MISSION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
-              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-2' : 'opacity-0 -translate-y-full'}`}>
+              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-2' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
                 <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
-                  {/* Luminous Diagonal Light Sweep Beam upon Arrival */}
-                  <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
+                  {/* Luminous Diagonal Light Sweep Beam upon Arrival (Desktop only) */}
+                  <div className="hidden sm:block pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
                     <div 
                       className="w-2/3 h-[200%] -top-1/2 bg-gradient-to-r from-transparent via-[#e5252a]/14 to-transparent blur-md"
                       style={{ animation: 'cardSheenSweep 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards' }}
@@ -1415,7 +1433,7 @@ export default function FounderPortfolio() {
         <div className="absolute top-1/4 -right-48 w-[500px] h-[500px] bg-gradient-to-bl from-neutral-200/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
         <div className="absolute bottom-1/4 -left-48 w-[500px] h-[500px] bg-gradient-to-tr from-neutral-100/50 to-transparent rounded-full blur-[130px] pointer-events-none -z-0" />
 
-        <div key={contactAnimKey} className="max-w-6xl mx-auto w-full relative z-10">
+        <div className="max-w-6xl mx-auto w-full relative z-10">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 mb-4 sm:mb-5 items-center">
             
