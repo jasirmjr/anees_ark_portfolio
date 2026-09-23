@@ -667,50 +667,51 @@ export default function FounderPortfolio() {
             will-change: transform, opacity;
           }
         }
-        @keyframes ventureFadeInMobile {
-          0% {
-            opacity: 0.95;
-            transform: translate3d(0, 8px, 0);
-          }
-          100% {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-          }
-        }
+        /* ──────────────────────────────────────────────
+           MOBILE VERSION (< 768px): ZERO ENTRANCE ANIMATIONS
+           Completely static, instantaneous rendering, zero GPU lag
+        ────────────────────────────────────────────── */
         @media (max-width: 767px) {
-          .venture-anim-center {
-            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-            position: relative;
-            will-change: transform, opacity;
-          }
-          .venture-anim-left {
-            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.03s both;
-            position: relative;
-            will-change: transform, opacity;
-          }
-          .venture-anim-right {
-            animation: ventureFadeInMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
-            position: relative;
-            will-change: transform, opacity;
+          .venture-anim-center,
+          .venture-anim-left,
+          .venture-anim-right,
+          .vision-card-fall-1,
+          .vision-card-fall-2 {
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
           }
 
-          @keyframes visionCardFallMobile {
-            0% {
-              opacity: 0.95;
-              transform: translate3d(0, -12px, 0);
-            }
-            100% {
-              opacity: 1;
-              transform: translate3d(0, 0, 0);
-            }
+          /* Disable all inline entrance animations on mobile */
+          [style*="heroNameFall"],
+          [style*="heroTaglineFadeIn"],
+          [style*="heroRightSlideIn"],
+          [style*="pillarSlideIn"],
+          [style*="contactHeaderRise"],
+          [style*="contactRiseRight"] {
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
           }
-          .vision-card-fall-1 {
-            animation: visionCardFallMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-            will-change: transform, opacity;
+
+          /* Ensure underline is immediately 100% width on mobile */
+          [style*="underlineExpand"] {
+            animation: none !important;
+            width: 100% !important;
+            opacity: 1 !important;
           }
-          .vision-card-fall-2 {
-            animation: visionCardFallMobile 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both;
-            will-change: transform, opacity;
+
+          /* Remove sheen sweep overlays on mobile */
+          [style*="contactSheenSweep"],
+          [style*="cardSheenSweep"] {
+            display: none !important;
+          }
+
+          /* Disable entrance transitions on mobile for Section 2 */
+          #about .transform {
+            transition: none !important;
+            transform: none !important;
+            opacity: 1 !important;
           }
         }
 
