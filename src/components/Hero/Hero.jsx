@@ -972,8 +972,8 @@ export default function FounderPortfolio() {
         className="relative py-6 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 bg-white overflow-hidden"
       >
         {/* Ambient Subtle Architectural Red Lighting */}
-        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] bg-[#e5252a]/[0.035] rounded-full blur-[120px] pointer-events-none z-0" />
-        <div className="absolute -bottom-24 -left-24 w-[380px] h-[380px] bg-[#e5252a]/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
+        <div className="hidden md:block absolute -top-24 -right-24 w-[420px] h-[420px] bg-[#e5252a]/[0.035] rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="hidden md:block absolute -bottom-24 -left-24 w-[380px] h-[380px] bg-[#e5252a]/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
 
         <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
           
@@ -986,8 +986,8 @@ export default function FounderPortfolio() {
             <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5 sm:gap-3.5 md:gap-4.5 w-full">
               
               {/* Photo 1: Community Keynote & Discussion */}
-              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200/90 hover:border-[#e5252a]/50 bg-neutral-100 shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
-                <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border-0 md:border md:border-neutral-200/90 md:hover:border-[#e5252a]/50 bg-transparent md:bg-neutral-100 shadow-none md:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
                   <picture>
                     <source type="image/webp" srcSet="/about1.webp" />
                     <img
@@ -996,19 +996,17 @@ export default function FounderPortfolio() {
                       loading="eager"
                       fetchPriority="high"
                       decoding="async"
-                      className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover object-center transform transition-transform duration-500 md:group-hover:scale-105"
                     />
                   </picture>
-                  {/* Subtle gradient vignette at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
-                  {/* Badge */}
-                  
+                  {/* Subtle gradient vignette at bottom (laptop view only) */}
+                  <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
                 </div>
               </div>
 
               {/* Photo 2: Startup Park Bengaluru Leadership Summit */}
-              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200/90 hover:border-[#e5252a]/50 bg-neutral-100 shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
-                <div className="relative aspect-[16/10] w-full overflow-hidden">
+              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border-0 md:border md:border-neutral-200/90 md:hover:border-[#e5252a]/50 bg-transparent md:bg-neutral-100 shadow-none md:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
                   <picture>
                     <source type="image/webp" srcSet="/about2.webp" />
                     <img
@@ -1017,12 +1015,11 @@ export default function FounderPortfolio() {
                       loading="eager"
                       fetchPriority="high"
                       decoding="async"
-                      className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover object-center transform transition-transform duration-500 md:group-hover:scale-105"
                     />
                   </picture>
-                  {/* Subtle gradient vignette at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
-                 
+                  {/* Subtle gradient vignette at bottom (laptop view only) */}
+                  <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
                 </div>
               </div>
 
@@ -1047,7 +1044,7 @@ export default function FounderPortfolio() {
 
             {/* Founder Lead Statement (High Priority to the Founder with Red Bar & Highlight) */}
             <div className="space-y-1.5 sm:space-y-2.5 md:space-y-3.5 text-neutral-700 leading-relaxed font-light">
-              <div className="p-2 sm:p-3.5 rounded-xl bg-gradient-to-r from-red-500/[0.04] via-red-500/[0.01] to-transparent border-l-[3px] border-[#e5252a]">
+              <div className="p-0 sm:p-3.5 rounded-xl bg-transparent sm:bg-gradient-to-r sm:from-red-500/[0.04] sm:via-red-500/[0.01] sm:to-transparent border-l-0 sm:border-l-[3px] sm:border-[#e5252a]">
                 <p className="text-[10px] sm:text-sm md:text-base lg:text-[17px] font-normal text-neutral-950 leading-snug sm:leading-relaxed">
                   I’m <strong className="font-bold text-[#e5252a]">Anees Ark</strong>, an entrepreneur driven by curiosity, creativity, technology, and the desire to build things that create real value. My work sits at the intersection of creative media, technology, design, and entrepreneurship, where I explore how ideas can evolve into meaningful experiences, products, and ventures.
                 </p>
