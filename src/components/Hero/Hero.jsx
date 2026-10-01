@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import heroPortrait from '../../assets/anees_portrait.webp';
+
+const heroPortrait = '/bg-removed.png';
 
 function AnimatedCounter({ target, suffix = '', padZero = true, isVisible, duration = 1300 }) {
   const [count, setCount] = useState(0);
@@ -815,7 +816,7 @@ export default function FounderPortfolio() {
 
           {/* LAYER 2: MODEL CUTOUT (In Front of All Text z-20 - Grounded & Static) */}
           <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-20 overflow-visible">
-            <div className="relative h-full max-h-[820px] aspect-[1827/3658] pointer-events-auto flex items-end justify-center">
+            <div className="relative h-full max-h-[820px] aspect-[1025/1835] pointer-events-auto flex items-end justify-center">
               <img
                 src={heroPortrait}
                 alt="Anees Ark"
@@ -935,7 +936,7 @@ export default function FounderPortfolio() {
 
             {/* LAYER 2: MODEL ON THE RIGHT (Overlaps right side of text in 3D!) */}
             <div className="absolute right-0 bottom-0 top-0 w-[58%] max-w-[260px] flex items-end justify-end pointer-events-none z-20 overflow-visible">
-              <div className="relative h-full aspect-[1827/3658] pointer-events-auto flex items-end justify-end">
+              <div className="relative h-full aspect-[1025/1835] pointer-events-auto flex items-end justify-end">
                 <img
                   src={heroPortrait}
                   alt="Anees Ark"
