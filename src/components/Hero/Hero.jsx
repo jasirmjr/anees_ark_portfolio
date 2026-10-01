@@ -38,8 +38,6 @@ function AnimatedCounter({ target, suffix = '', padZero = true, isVisible, durat
 
 export default function FounderPortfolio() {
   const [scrollY, setScrollY] = useState(0);
-  const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const videoRef = useRef(null);
 
   // Section 1 (Hero) entrance animations observer (re-triggers every time user enters Section 1)
   const heroRef = useRef(null);
@@ -101,25 +99,6 @@ export default function FounderPortfolio() {
 
     return () => observer.disconnect();
   }, []);
-
-  const toggleVideoAudio = () => {
-    if (videoRef.current) {
-      const nextMuted = !videoRef.current.muted;
-      videoRef.current.muted = nextMuted;
-      setIsVideoMuted(nextMuted);
-    }
-  };
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      if (isSection2Visible) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [isSection2Visible]);
 
   // ──────────────────────────────────────────────
   // SECTION 3: VENTURES ENTRANCE ANIMATION OBSERVER
@@ -998,54 +977,60 @@ export default function FounderPortfolio() {
 
         <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
           
-          {/* Left Column: Video with smooth scroll-down entrance */}
-          <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start md:transition-all md:duration-600 md:ease-out md:transform ${
+          {/* Left Column: Dual High-Speed Editorial Photos */}
+          <div className={`col-span-12 md:col-span-5 lg:col-span-5 flex flex-col justify-center md:transition-all md:duration-600 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0 scale-100' 
               : 'md:opacity-0 md:translate-y-12 md:scale-[0.97] opacity-100 translate-y-0 scale-100'
           }`}>
-            <div className="relative w-full max-w-[340px] sm:max-w-[360px] md:max-w-none aspect-[9/16] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200 hover:border-[#e5252a]/40 bg-neutral-950 shadow-md group transition-colors duration-300">
-              {/* Subtle top red accent line */}
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#e5252a] to-transparent opacity-85 z-20" />
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5 sm:gap-3.5 md:gap-4.5 w-full">
+              
+              {/* Photo 1: Community Keynote & Discussion */}
+              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200/90 hover:border-[#e5252a]/50 bg-neutral-100 shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
+                <div className="relative aspect-[16/10] w-full overflow-hidden">
+                  <picture>
+                    <source type="image/webp" srcSet="/about1.webp" />
+                    <img
+                      src="/compressed1.jpeg"
+                      alt="Anees Ark - Community & Ecosystem Keynote"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </picture>
+                  {/* Subtle gradient vignette at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
+                  {/* Badge */}
+                  
+                </div>
+              </div>
 
-              <video
-                ref={videoRef}
-                src="/anees.mp4"
-                autoPlay
-                loop
-                muted={isVideoMuted}
-                playsInline
-                preload="metadata"
-                className="w-full h-full object-cover"
-              />
+              {/* Photo 2: Startup Park Bengaluru Leadership Summit */}
+              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border border-neutral-200/90 hover:border-[#e5252a]/50 bg-neutral-100 shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
+                <div className="relative aspect-[16/10] w-full overflow-hidden">
+                  <picture>
+                    <source type="image/webp" srcSet="/about2.webp" />
+                    <img
+                      src="/compressed2.jpeg"
+                      alt="Anees Ark - Leadership Summit Bengaluru"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </picture>
+                  {/* Subtle gradient vignette at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
+                 
+                </div>
+              </div>
 
-              {/* Gradient scrim overlay for contrast */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
-
-              {/* Sound Toggle Button (Mute / Unmute) */}
-              <button
-                type="button"
-                onClick={toggleVideoAudio}
-                className="absolute bottom-2 right-2 sm:bottom-3.5 sm:right-3.5 md:bottom-4 md:right-4 z-20 inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-md border border-white/25 hover:border-[#e5252a]/70 text-white transition-all active:scale-95 cursor-pointer shadow-sm"
-                title={isVideoMuted ? "Click to unmute sound" : "Click to mute sound"}
-                aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
-              >
-                {isVideoMuted ? (
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-                  </svg>
-                ) : (
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#e5252a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                  </svg>
-                )}
-              </button>
             </div>
           </div>
 
           {/* Right Column: Statement with staggered scroll-down entrance */}
-          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 md:transition-all md:duration-600 md:delay-75 md:ease-out md:transform ${
+          <div className={`col-span-12 md:col-span-7 lg:col-span-7 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 md:transition-all md:duration-600 md:delay-75 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
               : 'md:opacity-0 md:translate-y-12 opacity-100 translate-y-0'
