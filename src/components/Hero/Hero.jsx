@@ -669,7 +669,7 @@ export default function FounderPortfolio() {
           }
         }
         /* ──────────────────────────────────────────────
-           MOBILE VERSION (< 768px): ZERO ENTRANCE ANIMATIONS
+           MOBILE VERSION (< 768px): ZERO ENTRANCE & SCROLL ANIMATIONS
            Completely static, instantaneous rendering, zero GPU lag
         ────────────────────────────────────────────── */
         @media (max-width: 767px) {
@@ -677,13 +677,7 @@ export default function FounderPortfolio() {
           .venture-anim-left,
           .venture-anim-right,
           .vision-card-fall-1,
-          .vision-card-fall-2 {
-            animation: none !important;
-            transform: none !important;
-            opacity: 1 !important;
-          }
-
-          /* Disable all inline entrance animations on mobile */
+          .vision-card-fall-2,
           [style*="heroNameFall"],
           [style*="heroTaglineFadeIn"],
           [style*="heroRightSlideIn"],
@@ -708,11 +702,12 @@ export default function FounderPortfolio() {
             display: none !important;
           }
 
-          /* Disable entrance transitions on mobile for Section 2 */
-          #about .transform {
+          /* Disable scroll entrance transitions on mobile */
+          #about .transform,
+          #ventures,
+          #philosophy,
+          footer {
             transition: none !important;
-            transform: none !important;
-            opacity: 1 !important;
           }
         }
 
@@ -902,32 +897,23 @@ export default function FounderPortfolio() {
             <div className="absolute left-1 inset-y-0 flex flex-col justify-center pointer-events-none select-none z-10 py-2">
               {/* ANEES */}
               <div className="flex items-baseline justify-start">
-                <span 
-                  style={{ animation: 'heroNameFall 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both' }}
-                  className="text-[16vw] xs:text-[14vw] sm:text-7xl font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans will-change-transform"
-                >
+                <span className="text-[16vw] xs:text-[14vw] sm:text-7xl font-black uppercase tracking-tighter leading-[0.80] text-neutral-950/95 font-sans">
                   ANEES
                 </span>
               </div>
 
               {/* ARK */}
               <div className="flex items-baseline justify-start pl-1 sm:pl-3">
-                <span 
-                  style={{ animation: 'heroNameFall 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both' }}
-                  className="text-[17.5vw] xs:text-[15.5vw] sm:text-8xl font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans will-change-transform"
-                >
+                <span className="text-[17.5vw] xs:text-[15.5vw] sm:text-8xl font-black uppercase tracking-tighter leading-[0.80] text-[#e5252a] font-sans">
                   ARK
                 </span>
               </div>
 
               {/* Tagline Pill */}
-              <div className="flex items-center justify-start pt-2 pl-1 sm:pl-3">
-                <div 
-                  style={{ animation: 'heroTaglineFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both' }}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm will-change-transform"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#e5252a] animate-pulse" />
-                  <span className="text-[8.5px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-700 font-bold">
+              <div className="flex items-center justify-start pt-1.5 sm:pt-2 pl-1 sm:pl-3">
+                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-neutral-300 bg-white/95 shadow-2xs backdrop-blur-sm">
+                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#e5252a] shrink-0" />
+                  <span className="text-[6.5px] xs:text-[7.5px] sm:text-[10px] font-mono uppercase tracking-[0.05em] xs:tracking-[0.08em] sm:tracking-[0.2em] text-neutral-700 font-bold whitespace-nowrap">
                     VENTURES // CREATIVE ARCHITECT
                   </span>
                 </div>
@@ -955,10 +941,7 @@ export default function FounderPortfolio() {
           </div>
 
           {/* EDITORIAL CARD ON MOBILE (Exact same content as laptop view) */}
-          <div 
-            style={{ animation: 'heroRightSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both' }}
-            className="relative z-30 -mt-3 sm:-mt-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-[0_8px_24px_rgba(0,0,0,0.05)] space-y-2.5 pointer-events-auto"
-          >
+          <div className="relative z-30 -mt-3 sm:-mt-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-[0_8px_24px_rgba(0,0,0,0.05)] space-y-2.5 pointer-events-auto">
             <div>
               <h2 className="text-base sm:text-lg font-black uppercase tracking-tight text-neutral-950 leading-snug">
                 Creative Entrepreneur & Venture Architect
@@ -1016,7 +999,7 @@ export default function FounderPortfolio() {
         <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
           
           {/* Left Column: Video with smooth scroll-down entrance */}
-          <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start transition-all duration-600 ease-out transform ${
+          <div className={`col-span-5 md:col-span-5 lg:col-span-4 flex justify-center md:justify-start md:transition-all md:duration-600 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0 scale-100' 
               : 'md:opacity-0 md:translate-y-12 md:scale-[0.97] opacity-100 translate-y-0 scale-100'
@@ -1062,7 +1045,7 @@ export default function FounderPortfolio() {
           </div>
 
           {/* Right Column: Statement with staggered scroll-down entrance */}
-          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 transition-all duration-600 delay-75 ease-out transform ${
+          <div className={`col-span-7 md:col-span-7 lg:col-span-8 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 md:transition-all md:duration-600 md:delay-75 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
               : 'md:opacity-0 md:translate-y-12 opacity-100 translate-y-0'
@@ -1153,13 +1136,13 @@ export default function FounderPortfolio() {
           >
             {ventures.map((venture, idx) => {
               const animClass = isVenturesVisible
-                ? (idx === 1 ? 'venture-anim-center' : idx === 0 ? 'venture-anim-left' : 'venture-anim-right')
+                ? (idx === 1 ? 'md:venture-anim-center' : idx === 0 ? 'md:venture-anim-left' : 'md:venture-anim-right')
                 : 'md:opacity-0 opacity-100';
 
               return (
                 <div
                   key={venture.id}
-                  className={`group relative rounded-[28px] sm:rounded-[36px] border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-[0_15px_40px_-12px_rgba(0,0,0,0.07)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-400 flex flex-col justify-between overflow-hidden shrink-0 w-[82vw] max-w-[340px] snap-center md:w-auto md:max-w-none md:shrink ${animClass}`}
+                  className={`group relative rounded-[28px] sm:rounded-[36px] border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-[0_15px_40px_-12px_rgba(0,0,0,0.07)] md:hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] md:hover:-translate-y-1.5 md:transition-all md:duration-400 flex flex-col justify-between overflow-hidden shrink-0 w-[82vw] max-w-[340px] snap-center md:w-auto md:max-w-none md:shrink ${animClass}`}
                 >
                   <div>
                     {/* Top Brand Logo Showcase Box (Replaces photo background) */}
@@ -1278,7 +1261,7 @@ export default function FounderPortfolio() {
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:gap-6 lg:gap-8">
               
               {/* ────────── CARD 1: CORE VISION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
-              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-1' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
+              <div className={`w-full ${isSection4Visible ? 'md:vision-card-fall-1' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
                 <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
                   {/* Luminous Diagonal Light Sweep Beam upon Arrival (Desktop only) */}
                   <div className="hidden sm:block pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
@@ -1350,7 +1333,7 @@ export default function FounderPortfolio() {
               </div>
 
               {/* ────────── CARD 2: CORE MISSION (FALL DOWN FROM SINGLE LINE + SHEEN) ────────── */}
-              <div className={`w-full ${isSection4Visible ? 'vision-card-fall-2' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
+              <div className={`w-full ${isSection4Visible ? 'md:vision-card-fall-2' : 'md:opacity-0 md:-translate-y-full opacity-100 translate-y-0'}`}>
                 <div className="group relative h-full p-3 sm:p-5 md:p-7 lg:p-8 rounded-xl sm:rounded-2xl md:rounded-3xl border border-neutral-200 bg-gradient-to-b from-[#fafafa] to-white hover:border-neutral-400 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default">
                   {/* Luminous Diagonal Light Sweep Beam upon Arrival (Desktop only) */}
                   <div className="hidden sm:block pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
