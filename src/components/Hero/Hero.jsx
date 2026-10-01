@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 
 const heroPortrait = '/bg-removed.png';
@@ -45,6 +45,54 @@ export default function FounderPortfolio() {
 
     return () => observer.disconnect();
   }, []);
+
+  // ──────────────────────────────────────────────
+  // SECTION 2: CONTINUOUS MULTI-PHOTO REEL STATE & AUTO-SCROLL
+  // Photos: 1, 2, 3, 4, about1, about2 with 60fps continuous infinite motion
+  // ──────────────────────────────────────────────
+  const aboutSlides = [
+    { id: 1, webp: '/1.webp', fallback: '/1-opt.jpg', alt: 'Anees Ark - Executive Keynote' },
+    { id: 2, webp: '/2.webp', fallback: '/2-opt.jpg', alt: 'Anees Ark - Leadership Summit' },
+    { id: 3, webp: '/3.webp', fallback: '/3-opt.jpg', alt: 'Anees Ark - Creative Strategy & Media' },
+    { id: 4, webp: '/4.webp', fallback: '/4-opt.jpg', alt: 'Anees Ark - Venture Architecture' },
+    { id: 5, webp: '/about1.webp', fallback: '/compressed1.jpeg', alt: 'Anees Ark - Community & Ecosystem Keynote' },
+    { id: 6, webp: '/about2.webp', fallback: '/compressed2.jpeg', alt: 'Anees Ark - Leadership Summit Bengaluru' },
+  ];
+
+  const reelRef = useRef(null);
+  const [isReelPaused, setIsReelPaused] = useState(false);
+
+  // Smooth continuous auto-scroll loop (60fps requestAnimationFrame)
+  useEffect(() => {
+    let animId;
+    const container = reelRef.current;
+    if (!container) return;
+
+    const scrollStep = () => {
+      if (!isReelPaused && container) {
+        container.scrollLeft += 1.5; // Smooth continuous cinematic speed (increased per user request)
+        const half = container.scrollWidth / 2;
+        if (container.scrollLeft >= half) {
+          container.scrollLeft -= half;
+        } else if (container.scrollLeft <= 0) {
+          container.scrollLeft += half;
+        }
+      }
+      animId = requestAnimationFrame(scrollStep);
+    };
+
+    animId = requestAnimationFrame(scrollStep);
+    return () => cancelAnimationFrame(animId);
+  }, [isReelPaused]);
+
+  const nudgeReel = (direction) => {
+    if (!reelRef.current) return;
+    const scrollAmount = 480;
+    reelRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  };
 
   // ──────────────────────────────────────────────
   // SECTION 3: VENTURES ENTRANCE ANIMATION OBSERVER
@@ -867,65 +915,68 @@ export default function FounderPortfolio() {
       <section 
         id="about" 
         ref={section2Ref}
-        className="relative py-6 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-8 md:px-12 lg:px-16 bg-white overflow-hidden"
+        className="relative py-6 sm:py-12 md:py-14 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-8 xl:px-12 bg-white overflow-hidden"
       >
         {/* Ambient Subtle Architectural Red Lighting */}
         <div className="hidden md:block absolute -top-24 -right-24 w-[420px] h-[420px] bg-[#e5252a]/[0.035] rounded-full blur-[120px] pointer-events-none z-0" />
         <div className="hidden md:block absolute -bottom-24 -left-24 w-[380px] h-[380px] bg-[#e5252a]/[0.03] rounded-full blur-[100px] pointer-events-none z-0" />
 
-        <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start md:items-center">
+        <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-12 gap-3 sm:gap-6 md:gap-8 lg:gap-10 items-start md:items-center">
           
-          {/* Left Column: Dual High-Speed Editorial Photos */}
-          <div className={`col-span-12 md:col-span-5 lg:col-span-5 flex flex-col justify-center md:transition-all md:duration-600 md:ease-out md:transform ${
+          {/* Left Column: Continuous Multi-Photo Editorial Reel (Photos: 1, 2, 3, 4, about1, about2) */}
+          <div className={`col-span-12 md:col-span-6 lg:col-span-6 flex flex-col justify-center max-w-[620px] lg:max-w-[640px] mx-auto md:mx-0 w-full md:transition-all md:duration-600 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0 scale-100' 
               : 'md:opacity-0 md:translate-y-12 md:scale-[0.97] opacity-100 translate-y-0 scale-100'
           }`}>
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5 sm:gap-3.5 md:gap-4.5 w-full">
-              
-              {/* Photo 1: Community Keynote & Discussion */}
-              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border-0 md:border md:border-neutral-200/90 md:hover:border-[#e5252a]/50 bg-transparent md:bg-neutral-100 shadow-none md:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
-                  <picture>
-                    <source type="image/webp" srcSet="/about1.webp" />
-                    <img
-                      src="/compressed1.jpeg"
-                      alt="Anees Ark - Community & Ecosystem Keynote"
-                      loading="eager"
-                      fetchPriority="high"
-                      decoding="async"
-                      className="w-full h-full object-cover object-center transform transition-transform duration-500 md:group-hover:scale-105"
-                    />
-                  </picture>
-                  {/* Subtle gradient vignette at bottom (laptop view only) */}
-                  <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
-                </div>
-              </div>
+            
+            
 
-              {/* Photo 2: Startup Park Bengaluru Leadership Summit */}
-              <div className="group relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border-0 md:border md:border-neutral-200/90 md:hover:border-[#e5252a]/50 bg-transparent md:bg-neutral-100 shadow-none md:shadow-[0_8px_25px_-8px_rgba(0,0,0,0.06)] md:hover:shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] transition-all duration-300">
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl">
-                  <picture>
-                    <source type="image/webp" srcSet="/about2.webp" />
-                    <img
-                      src="/compressed2.jpeg"
-                      alt="Anees Ark - Leadership Summit Bengaluru"
-                      loading="eager"
-                      fetchPriority="high"
-                      decoding="async"
-                      className="w-full h-full object-cover object-center transform transition-transform duration-500 md:group-hover:scale-105"
-                    />
-                  </picture>
-                  {/* Subtle gradient vignette at bottom (laptop view only) */}
-                  <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-70 group-hover:opacity-40 transition-opacity pointer-events-none" />
-                </div>
-              </div>
+            {/* Continuous Scrolling Photo Reel Container (Expanded Width for Full Photo Visibility) */}
+            <div 
+              className="relative w-full max-w-[620px] lg:max-w-[640px] overflow-hidden rounded-2xl sm:rounded-3xl border-0 md:border md:border-neutral-200/90 bg-neutral-950/95 p-2 sm:p-2.5 shadow-none md:shadow-[0_12px_32px_-10px_rgba(0,0,0,0.08)] select-none group"
+              onMouseEnter={() => setIsReelPaused(true)}
+              onMouseLeave={() => setIsReelPaused(false)}
+              onTouchStart={() => setIsReelPaused(true)}
+              onTouchEnd={() => setTimeout(() => setIsReelPaused(false), 2000)}
+            >
+              {/* Soft edge gradient fades for cinematic continuity */}
+              <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-8 bg-gradient-to-r from-neutral-950/80 to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-5 sm:w-8 bg-gradient-to-l from-neutral-950/80 to-transparent z-10 pointer-events-none" />
 
+              {/* Infinite Continuous Track */}
+              <div 
+                ref={reelRef}
+                className="flex gap-2.5 sm:gap-3 overflow-x-auto scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5 select-none"
+              >
+                {[...aboutSlides, ...aboutSlides].map((slide, idx) => (
+                  <div 
+                    key={`${slide.id}-${idx}`}
+                    className="w-[280px] xs:w-[320px] sm:w-[370px] md:w-[440px] lg:w-[490px] h-[230px] xs:h-[260px] sm:h-[320px] md:h-[420px] lg:h-[450px] shrink-0 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10 bg-neutral-900 shadow-2xs relative group/photo"
+                  >
+                    <picture>
+                      <source type="image/webp" srcSet={slide.webp} />
+                      <img
+                        src={slide.fallback}
+                        alt={slide.alt}
+                        loading={idx < 4 ? "eager" : "lazy"}
+                        fetchPriority={idx < 4 ? "high" : "low"}
+                        decoding="async"
+                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/photo:scale-105 pointer-events-none"
+                      />
+                    </picture>
+                    {/* Subtle bottom gradient vignette */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+                   
+                  </div>
+                ))}
+              </div>
             </div>
+
           </div>
 
           {/* Right Column: Statement with staggered scroll-down entrance */}
-          <div className={`col-span-12 md:col-span-7 lg:col-span-7 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 md:transition-all md:duration-600 md:delay-75 md:ease-out md:transform ${
+          <div className={`col-span-12 md:col-span-6 lg:col-span-6 flex flex-col justify-center space-y-2 sm:space-y-3.5 md:space-y-4.5 md:transition-all md:duration-600 md:delay-75 md:ease-out md:transform ${
             isSection2Visible 
               ? 'opacity-100 translate-y-0' 
               : 'md:opacity-0 md:translate-y-12 opacity-100 translate-y-0'
